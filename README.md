@@ -1,5 +1,5 @@
 # pyphotofs
-iPhoto File System with FUSE Python
+# iPhoto File System with FUSE Python
 
 Initial loading... please stand by
 
