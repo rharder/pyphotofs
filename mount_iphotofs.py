@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 
-from __future__ import with_statement
+#from __future__ import with_statement
 
-
-import plistlib
 import os
 import atexit, shutil
 from threading import Lock
@@ -13,9 +11,10 @@ import time
 import datetime
 
 from errno import ENOENT
-from stat import S_IFDIR, S_IFREG
+from stat import S_IFDIR
 from sys import argv, exit
 
+import plistlib
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn, fuse_get_context
 
 
@@ -410,6 +409,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
             elif path.startswith('/Albums/') or path.startswith('/Rolls/'):
                 leadingEls, tail = os.path.split(path)  # eg, /Albums and CampingTrip
 
+                # Asking about an album or roll
                 if leadingEls == '/Albums' or leadingEls == '/Rolls':  # Asking us about specific album or roll
                     collName = tail
                     if leadingEls == '/Albums':
@@ -426,6 +426,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                             st_ctime=now, st_atime=now, st_mtime=now))
                         return cache.set(self._ck_st_by_path, path, st)
 
+                # Asking about an image
                 else:
                     imgName = tail
                     collType, collName = os.path.split(leadingEls)
