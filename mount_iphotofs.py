@@ -143,13 +143,14 @@ class iPhotoLibrary(object):
 ###
 
     def collection(self, type, name):
-        coll = self._cache.get(self._ck_collectionByTypeName, type + name)
+        key = type + '::' + name
+        coll = self._cache.get(self._ck_collectionByTypeName, key)
         if coll is not None:
             return coll
         else:
             for c in self.collections(type):
                 if c.name() == name:
-                    return self._cache.set(self._ck_collectionByTypeName, type + name, c)
+                    return self._cache.set(self._ck_collectionByTypeName, key, c)
 
     def album(self, name):
         return self.collection('Albums', name)
@@ -260,7 +261,6 @@ class iPhotoCollection(object):
                 image = self._parentLibrary.image_from_id(id)
                 if image is not None and image.filename() == filename:
                     return cache.set(self._ck_imageByTypeNameFilename, key, image)
-            return None
 
     def num_images(self):
         return len(self._plist['KeyList'])  # Not bothering to cache
