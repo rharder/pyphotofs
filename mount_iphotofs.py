@@ -15,6 +15,7 @@ from stat import S_IFDIR
 from sys import argv, exit
 
 import plistlib
+
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn, fuse_get_context
 
 
