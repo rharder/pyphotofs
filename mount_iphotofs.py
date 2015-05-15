@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+__author__ = "Robert Harder, rob@iharder.net"
+__copyright__ = "This code is released into the Public Domain"
 
-#from __future__ import with_statement
+# Thanks to education received here:
+# http://code.activestate.com/recipes/278731-creating-a-daemon-the-python-way/
 
 import os
 import atexit, shutil
