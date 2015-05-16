@@ -39,6 +39,15 @@ On a Mac you might get a folder structure like so:
     │   │   ├── IMG_1204.JPG
 
 
+## Installation
+
+After installing the other required software (mentioned below), copy 
+<code>mount_iphotofs.py</code> and <code>mount_iphotofs</code> (just 
+a symbolic link to help the native <code>mount</code> command) to 
+wherever your platform keeps all the other <code>mount_xxxx</code>
+commands, probably <code>/sbin</code>.
+
+
 ## Requirements
 
 This tool relies on *plistlib* to read the AlbumData.xml file within
