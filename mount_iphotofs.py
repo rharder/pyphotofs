@@ -527,12 +527,8 @@ def strip_end(text, suffix):
 def remove_mount(mount):
     try:
         shutil.rmtree(mount)
-    except OSError:
-        pass
-
-
-
-
+    except OSError, e:
+        print e
 
 
 if __name__ == '__main__':
@@ -551,15 +547,17 @@ if __name__ == '__main__':
 
     if libraryPath.endswith('/'):
         libraryPath = libraryPath[:-1]
+    base = strip_end(os.path.basename(libraryPath), '.photolibrary')
+
     if system() == 'Darwin':
         preferredMountLocation = '/Volumes'
     elif system() == 'Linux':
         preferredMountLocation = '/media'
     else:
         preferredMountLocation = '/media'
-
-    base = strip_end(os.path.basename(libraryPath), '.photolibrary')
-
+    
+    # Use the default location like /Volumes
+    # and make the mount folder to be the library name
     if mount is None or mount == '-':
         mount = os.path.join(preferredMountLocation, base)
         try:
@@ -567,7 +565,25 @@ if __name__ == '__main__':
         except OSError:
             if not os.path.isdir(mount):
                 raise
-        atexit.register(remove_mount, mount)
+        # Be sure to remove the mount point we just created
+        # and remember that the current directory gets changed
+        # so we want to register the absolute path
+        atexit.register(remove_mount, os.path.abspath(mount))
+    
+    # Make the mount location the library name but
+    # put it in the location designated
+    elif mount.startswith('-'):
+        mount = os.path.join(mount[1:], base)
+        print "Mount: " + str(mount)
+        try:
+            os.makedirs(mount)
+        except OSError:
+            if not os.path.isdir(mount):
+                raise
+        # Be sure to remove the mount point we just created
+        # and remember that the current directory gets changed
+        # so we want to register the absolute path
+        atexit.register(remove_mount, os.path.abspath(mount))
 
     try:
         fuse = FUSE(iPhoto_FUSE_FS(libraryPath), mount, ro=True)#foreground=True, ro=True)
