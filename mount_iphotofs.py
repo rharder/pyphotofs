@@ -353,8 +353,12 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     _ck_folder_listing = '_ck_folder_listing'
     _ck_image_by_path = '_ck_image_by_path'
     
-    def __init__(self, libraryPath):
+    def __initZZZ__(self, libraryPath):
         self.library = iPhotoLibrary( libraryPath )
+        self.rwlock = Lock()
+
+    def __init__(self, lib):
+        self.library = lib
         self.rwlock = Lock()
 
     def _cache(self):
@@ -517,6 +521,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     opendir = None
     releasedir = None
 
+
 def strip_end(text, suffix):
     if not text.endswith(suffix):
         return text
@@ -529,8 +534,6 @@ def remove_mount(mount):
         shutil.rmtree(mount)
     except OSError:
         pass
-
-
 
 
 
@@ -551,6 +554,8 @@ if __name__ == '__main__':
 
     if libraryPath.endswith('/'):
         libraryPath = libraryPath[:-1]
+    base = strip_end(os.path.basename(libraryPath), '.photolibrary')
+
     if system() == 'Darwin':
         preferredMountLocation = '/Volumes'
     elif system() == 'Linux':
@@ -558,19 +563,20 @@ if __name__ == '__main__':
     else:
         preferredMountLocation = '/media'
 
-    base = strip_end(os.path.basename(libraryPath), '.photolibrary')
-
     if mount is None or mount == '-':
         mount = os.path.join(preferredMountLocation, base)
         try:
             os.makedirs(mount)
+            atexit.register(remove_mount, mount)
         except OSError:
             if not os.path.isdir(mount):
                 raise
-        atexit.register(remove_mount, mount)
 
+    lib = None
     try:
-        fuse = FUSE(iPhoto_FUSE_FS(libraryPath), mount, ro=True)#foreground=True, ro=True)
+        lib = iPhotoLibrary(libraryPath)
+        fuse = FUSE(iPhoto_FUSE_FS(lib), mount, ro=True)#foreground=True, ro=True)
     except Exception, e:
         print e
         exit(1)
+
