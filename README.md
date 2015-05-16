@@ -100,6 +100,21 @@ This tool consists of a few classes to help read iPhoto libraries.  These classe
 be of use outside of the purpose of mounting the library as a filesystem.  Feel free
 to extract these classes and use them in your own product.
 
+For instance you might copy and paste the classes into your own script to list album
+names in a library:
+
+    lib = iPhotoLibrary('~/Pictures/iPhoto Library.photolibrary')
+    for a in lib.albums():
+        print('%s (%d)' % (a.name(), a.num_images())
+
+and you might get output like so:
+
+    Photos (8)
+    Flagged (0)
+    Last 12 Months (1)
+    Last Import (8)
+    Apr 24, 2012 (8)
+
 
 ## Credits
 
