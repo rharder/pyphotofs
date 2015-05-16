@@ -4,7 +4,38 @@ This tool mounts an iPhoto library as a filesystem with Albums and Rolls as fold
 
 ## Example Usage
 
-mount_iphotofs.py ~/Pictures/iPhoto\ Library.photolibrary
+<code>mount_iphotofs.py ~/Pictures/iPhoto\ Library.photolibrary</code>
+
+Without specifying a mount point, it will try to make a reasonable mount point
+based on the library name and in a location native to the operating system.
+On a Mac you might get a folder structure like so:
+
+
+    $ tree /Volumes/iPhoto\ Library
+    /Volumes/iPhoto\ Library
+    ├── Albums
+    │   ├── Apr\ 24,\ 2012
+    │   │   ├── IMG_1201.JPG
+    │   │   ├── IMG_1202.JPG
+    │   │   ├── IMG_1203.JPG
+    │   │   ├── IMG_1204.JPG
+    │   ├── Flagged
+    │   ├── Last\ 12\ Months
+    │   │   └── IMG_1204.JPG
+    │   ├── Last\ Import
+    │   │   ├── IMG_1203.JPG
+    │   │   ├── IMG_1204.JPG
+    │   └── Photos
+    │   │   ├── IMG_1201.JPG
+    │   │   ├── IMG_1202.JPG
+    │   │   ├── IMG_1203.JPG
+    │   │   ├── IMG_1204.JPG
+    └── Rolls
+        └── Apr\ 24,\ 2012
+    │   │   ├── IMG_1201.JPG
+    │   │   ├── IMG_1202.JPG
+    │   │   ├── IMG_1203.JPG
+    │   │   ├── IMG_1204.JPG
 
 ## Requirements
 
@@ -13,16 +44,16 @@ the iPhoto library folder, *fusepy* to interface with FUSE, and
 some host-supported implementation of *FUSE* itself.
 
 Required software:
- - FUSE
-   -- Mac: http://osxfuse.github.io
-   -- GNU/Linux: http://fuse.sourceforge.net
-   -- FreeBSD: Built-in
- - fusepy 
-   -- https://github.com/terencehonles/fusepy
-   -- sudo pip install fusepy
- - plistlib
-   -- https://docs.python.org/2/library/plistlib.html
-   -- sudo pip install plistlib
+- FUSE
+    - Mac: http://osxfuse.github.io
+    - GNU/Linux: http://fuse.sourceforge.net
+    - FreeBSD: Built-in
+- fusepy 
+    - https://github.com/terencehonles/fusepy
+    - sudo pip install fusepy
+- plistlib
+    - https://docs.python.org/2/library/plistlib.html
+    - sudo pip install plistlib
  
 ## To Do
 
