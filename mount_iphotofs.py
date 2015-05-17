@@ -149,7 +149,7 @@ class iPhotoLibrary(object):
             return coll
         else:
             for c in self.collections(type):
-                if c.name() == name:
+                if c.name == name:
                     return self._cache.set(self._ck_collectionByTypeName, key, c)
 
     def album(self, name):
@@ -164,7 +164,7 @@ class iPhotoLibrary(object):
         if names is not None:
             return names
         else:
-            names = [c.name() for c in self.collections(type)]
+            names = [c.name for c in self.collections(type)]
             return self._cache.set(self._ck_collectionNamesByType, type, names)
 
     def album_names(self):
@@ -236,13 +236,21 @@ class iPhotoCollection(object):
 
     def _cache(self):
         return self._parentLibrary._cache.get(self._parentLibrary._ck_childCaches, self, lambda:Cache())
-        
+
     def name(self):
+        """
+        Returns the name of the album, roll, etc
+        :return: name
+        """
         return self._plist[self._nameKey]
     
     def images(self):
+        """
+        Returns a list of all images (as iPhotoImage objects) within the collection.
+        :return: a list of images
+        """
         cache = self._cache()
-        key = self._nameKey + '::' + self.name()
+        key = self._nameKey + '::' + self.name
         list = cache.get(self._ck_collectionImagesByTypeName, key)
         if list is not None:
             return list
@@ -251,8 +259,14 @@ class iPhotoCollection(object):
             return cache.set(self._ck_collectionImagesByTypeName, key, list)
 
     def image_by_filename(self, filename):
+        """
+        Returns the image (as an iPhotoImage object) with the given filename
+        within this collection.
+        :param filename: The filename of the image
+        :return: The image with the matching filename
+        """
         cache = self._cache()
-        key = self._nameKey + '::' + self.name() + '::' + filename
+        key = self._nameKey + '::' + self.name + '::' + filename
         image = cache.get(self._ck_imageByTypeNameFilename, key)
         if image is not None:
             return image
@@ -263,6 +277,7 @@ class iPhotoCollection(object):
                     return cache.set(self._ck_imageByTypeNameFilename, key, image)
 
     def num_images(self):
+        """Returns the number of images in the collection."""
         return len(self._plist['KeyList'])  # Not bothering to cache
 
 
@@ -353,8 +368,12 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     _ck_folder_listing = '_ck_folder_listing'
     _ck_image_by_path = '_ck_image_by_path'
     
-    def __init__(self, libraryPath):
+    def __initZZZ__(self, libraryPath):
         self.library = iPhotoLibrary( libraryPath )
+        self.rwlock = Lock()
+
+    def __init__(self, lib):
+        self.library = lib
         self.rwlock = Lock()
 
     def _cache(self):
@@ -517,6 +536,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     opendir = None
     releasedir = None
 
+
 def strip_end(text, suffix):
     if not text.endswith(suffix):
         return text
@@ -527,8 +547,8 @@ def strip_end(text, suffix):
 def remove_mount(mount):
     try:
         shutil.rmtree(mount)
-    except OSError, e:
-        print e
+    except OSError:
+        pass
 
 
 if __name__ == '__main__':
