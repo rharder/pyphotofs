@@ -368,9 +368,6 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     _ck_folder_listing = '_ck_folder_listing'
     _ck_image_by_path = '_ck_image_by_path'
     
-    def __initZZZ__(self, libraryPath):
-        self.library = iPhotoLibrary( libraryPath )
-        self.rwlock = Lock()
 
     def __init__(self, lib):
         self.library = lib
@@ -547,14 +544,18 @@ def strip_end(text, suffix):
 def remove_mount(mount):
     try:
         shutil.rmtree(mount)
-    except OSError:
-        pass
+    except OSError, e:
+        print e
 
 
 if __name__ == '__main__':
+
     if len(argv) <2:
         print('usage: %s iphotolibrary [mountpoint]' % argv[0])
         exit(1)
+
+    #libraryPath = '/Users/rob/Pictures/iPhoto Libraries/2014-2018 Colorado.photolibrary'
+
 
     # If dash (-) is passed as mountpoint or mountpoint is not
     # specified then it will make a mount point based on the
@@ -568,6 +569,7 @@ if __name__ == '__main__':
     if libraryPath.endswith('/'):
         libraryPath = libraryPath[:-1]
     base = strip_end(os.path.basename(libraryPath), '.photolibrary')
+    
 
     if system() == 'Darwin':
         preferredMountLocation = '/Volumes'
@@ -594,7 +596,6 @@ if __name__ == '__main__':
     # put it in the location designated
     elif mount.startswith('-'):
         mount = os.path.join(mount[1:], base)
-        print "Mount: " + str(mount)
         try:
             os.makedirs(mount)
         except OSError:
@@ -606,7 +607,8 @@ if __name__ == '__main__':
         atexit.register(remove_mount, os.path.abspath(mount))
 
     try:
-        fuse = FUSE(iPhoto_FUSE_FS(libraryPath), mount, ro=True)#foreground=True, ro=True)
+        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
+        #fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, foreground=True, ro=True)
     except Exception, e:
         print e
         exit(1)
