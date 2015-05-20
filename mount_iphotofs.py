@@ -552,6 +552,15 @@ if __name__ == '__main__':
 
     if len(argv) <2:
         print('usage: %s iphotolibrary [mountpoint]' % argv[0])
+        print("""
+            If mountpoint is not specified or a dash -, a mount point will be made
+            at the host system's default location (or best guess)
+            such as /Volumes on a Mac or /media on most other systems.
+
+            If mountpoint begins with a dash, then a mount point will be created
+            automatically within the folder specified after the dash, eg,
+            mount_iphotofs ~/Pictures/iPhotoLibrary.photolibrary -.
+        """)
         exit(1)
 
     #libraryPath = '/Users/rob/Pictures/iPhoto Libraries/2014-2018 Colorado.photolibrary'
@@ -569,7 +578,7 @@ if __name__ == '__main__':
     if libraryPath.endswith('/'):
         libraryPath = libraryPath[:-1]
     base = strip_end(os.path.basename(libraryPath), '.photolibrary')
-    
+
 
     if system() == 'Darwin':
         preferredMountLocation = '/Volumes'
