@@ -1,15 +1,17 @@
 #!/usr/bin/env python
-
+# Python 2.7
 """
 Mounts an iPhoto library as a filesystem.
 """
-
+from __future__ import print_function
 import os
+import sys
 import atexit, shutil
 from threading import Lock
 from platform import system
 import time
 import datetime
+import traceback
 
 from errno import ENOENT
 from stat import S_IFDIR
@@ -475,12 +477,12 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     def readdir(self, path, fh=None):
         default = ['.', '..']
         cache = self._cache()
-        print path
+        print(path)
 
         # Quick cache return
         listing = cache.get(self._ck_folder_listing, path)
         if listing is not None:
-            print listing
+            print(listing)
             return listing
 
         else:
@@ -547,7 +549,8 @@ def remove_mount(mount):
     try:
         shutil.rmtree(mount)
     except OSError, e:
-        print e
+        print(e)
+        traceback.print_exc(file=sys.stderr)
 
 
 if __name__ == '__main__':
@@ -598,6 +601,7 @@ if __name__ == '__main__':
         except OSError:
             if not os.path.isdir(mount):
                 raise
+        # print(mount, os.listdir(mount))
         # Be sure to remove the mount point we just created
         # and remember that the current directory gets changed
         # so we want to register the absolute path
@@ -619,7 +623,8 @@ if __name__ == '__main__':
 
     try:
         #fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
-        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, foreground=True, ro=True)
+        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath))), mount, nothreads=True, foreground=False, ro=True)
     except Exception, e:
-        print e
+        print(e)
+        traceback.print_exc(file=sys.stderr)
         exit(1)
