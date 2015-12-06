@@ -1,15 +1,17 @@
 #!/usr/bin/env python
-# For Python v2.7
+# Python 2.7
 """
 Mounts an iPhoto library as a filesystem.
 """
-
+from __future__ import print_function
 import os
+import sys
 import atexit, shutil
 from threading import Lock
 from platform import system
 import time
 import datetime
+import traceback
 
 from errno import ENOENT
 from stat import S_IFDIR
@@ -25,83 +27,6 @@ __email__ = "rob@iharder.net"
 __copyright__ = "This code is released into the Public Domain"
 __version__ = "0.1"
 __status__ = "Development"
-
-
-def main():
-    
-    if len(argv) <2:
-        print('usage: %s iphotolibrary [mountpoint]' % argv[0])
-        print("""
-            If mountpoint is not specified or a dash -, a mount point will be made
-            at the host system's default location (or best guess)
-            such as /Volumes on a Mac or /media on most other systems.
-
-            If mountpoint begins with a dash, then a mount point will be created
-            automatically within the folder specified after the dash, eg,
-            mount_iphotofs ~/Pictures/iPhotoLibrary.photolibrary -.
-        """)
-        exit(1)
-
-    #libraryPath = '/Users/rob/Pictures/iPhoto Libraries/2014-2018 Colorado.photolibrary'
-
-
-    # If dash (-) is passed as mountpoint or mountpoint is not
-    # specified then it will make a mount point based on the
-    # name of the iPhoto library.
-    libraryPath = argv[1]
-    if len(argv) > 2:
-        mount = argv[2]
-    else:
-        mount = None
-
-    if libraryPath.endswith('/'):
-        libraryPath = libraryPath[:-1]
-    base = strip_end(os.path.basename(libraryPath), '.photolibrary')
-
-
-    if system() == 'Darwin':
-        preferredMountLocation = '/Volumes'
-    elif system() == 'Linux':
-        preferredMountLocation = '/media'
-    else:
-        preferredMountLocation = '/media'
-    
-    # Use the default location like /Volumes
-    # and make the mount folder to be the library name
-    if mount is None or mount == '-':
-        mount = os.path.join(preferredMountLocation, base)
-        try:
-            os.makedirs(mount)
-        except OSError:
-            if not os.path.isdir(mount):
-                raise
-        # Be sure to remove the mount point we just created
-        # and remember that the current directory gets changed
-        # so we want to register the absolute path
-        atexit.register(remove_mount, os.path.abspath(mount))
-    
-    # Make the mount location the library name but
-    # put it in the location designated
-    elif mount.startswith('-'):
-        mount = os.path.join(mount[1:], base)
-        try:
-            os.makedirs(mount)
-        except OSError:
-            if not os.path.isdir(mount):
-                raise
-        # Be sure to remove the mount point we just created
-        # and remember that the current directory gets changed
-        # so we want to register the absolute path
-        atexit.register(remove_mount, os.path.abspath(mount))
-
-    try:
-        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
-        #fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, foreground=True, ro=True)
-    except Exception, e:
-        print e
-        exit(1)
-
-
 
 
 class Cache(object):
@@ -226,7 +151,7 @@ class iPhotoLibrary(object):
             return coll
         else:
             for c in self.collections(type):
-                if c.name == name:
+                if c.name() == name:
                     return self._cache.set(self._ck_collectionByTypeName, key, c)
 
     def album(self, name):
@@ -241,7 +166,7 @@ class iPhotoLibrary(object):
         if names is not None:
             return names
         else:
-            names = [c.name for c in self.collections(type)]
+            names = [c.name() for c in self.collections(type)]
             return self._cache.set(self._ck_collectionNamesByType, type, names)
 
     def album_names(self):
@@ -327,7 +252,7 @@ class iPhotoCollection(object):
         :return: a list of images
         """
         cache = self._cache()
-        key = self._nameKey + '::' + self.name
+        key = self._nameKey + '::' + self.name()
         list = cache.get(self._ck_collectionImagesByTypeName, key)
         if list is not None:
             return list
@@ -343,7 +268,7 @@ class iPhotoCollection(object):
         :return: The image with the matching filename
         """
         cache = self._cache()
-        key = self._nameKey + '::' + self.name + '::' + filename
+        key = self._nameKey + '::' + self.name() + '::' + filename
         image = cache.get(self._ck_imageByTypeNameFilename, key)
         if image is not None:
             return image
@@ -552,10 +477,12 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     def readdir(self, path, fh=None):
         default = ['.', '..']
         cache = self._cache()
+        print(path)
 
         # Quick cache return
         listing = cache.get(self._ck_folder_listing, path)
         if listing is not None:
+            print(listing)
             return listing
 
         else:
@@ -622,8 +549,82 @@ def remove_mount(mount):
     try:
         shutil.rmtree(mount)
     except OSError, e:
-        print e
+        print(e)
+        traceback.print_exc(file=sys.stderr)
 
 
 if __name__ == '__main__':
-    main()
+
+    if len(argv) <2:
+        print('usage: %s iphotolibrary [mountpoint]' % argv[0])
+        print("""
+            If mountpoint is not specified or a dash -, a mount point will be made
+            at the host system's default location (or best guess)
+            such as /Volumes on a Mac or /media on most other systems.
+
+            If mountpoint begins with a dash, then a mount point will be created
+            automatically within the folder specified after the dash, eg,
+            mount_iphotofs ~/Pictures/iPhotoLibrary.photolibrary -.
+        """)
+        exit(1)
+
+    #libraryPath = '/Users/rob/Pictures/iPhoto Libraries/2014-2018 Colorado.photolibrary'
+
+
+    # If dash (-) is passed as mountpoint or mountpoint is not
+    # specified then it will make a mount point based on the
+    # name of the iPhoto library.
+    libraryPath = argv[1]
+    if len(argv) > 2:
+        mount = argv[2]
+    else:
+        mount = None
+
+    if libraryPath.endswith('/'):
+        libraryPath = libraryPath[:-1]
+    base = strip_end(os.path.basename(libraryPath), '.photolibrary')
+
+
+    if system() == 'Darwin':
+        preferredMountLocation = '/Volumes'
+    elif system() == 'Linux':
+        preferredMountLocation = '/media'
+    else:
+        preferredMountLocation = '/media'
+    
+    # Use the default location like /Volumes
+    # and make the mount folder to be the library name
+    if mount is None or mount == '-':
+        mount = os.path.join(preferredMountLocation, base)
+        try:
+            os.makedirs(mount)
+        except OSError:
+            if not os.path.isdir(mount):
+                raise
+        # print(mount, os.listdir(mount))
+        # Be sure to remove the mount point we just created
+        # and remember that the current directory gets changed
+        # so we want to register the absolute path
+        atexit.register(remove_mount, os.path.abspath(mount))
+    
+    # Make the mount location the library name but
+    # put it in the location designated
+    elif mount.startswith('-'):
+        mount = os.path.join(mount[1:], base)
+        try:
+            os.makedirs(mount)
+        except OSError:
+            if not os.path.isdir(mount):
+                raise
+        # Be sure to remove the mount point we just created
+        # and remember that the current directory gets changed
+        # so we want to register the absolute path
+        atexit.register(remove_mount, os.path.abspath(mount))
+
+    try:
+        #fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
+        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath))), mount, nothreads=True, foreground=False, ro=True)
+    except Exception, e:
+        print(e)
+        traceback.print_exc(file=sys.stderr)
+        exit(1)
