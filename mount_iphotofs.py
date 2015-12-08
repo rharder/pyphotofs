@@ -627,7 +627,7 @@ if __name__ == '__main__':
     try:
         # fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
         fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath)), verbose=True),
-                    mount, nothreads=True, foreground=False, ro=True)
+                    mount, nothreads=True, foreground=False, ro=True, allow_other=True)
     except Exception, e:
         print(e)
         traceback.print_exc(file=sys.stderr)
