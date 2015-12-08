@@ -12,15 +12,11 @@ from platform import system
 import time
 import datetime
 import traceback
-
 from errno import ENOENT
 from stat import S_IFDIR
 from sys import argv, exit
-
 import plistlib
-
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn, fuse_get_context
-
 
 __author__ = "Robert Harder"
 __email__ = "rob@iharder.net"
@@ -34,17 +30,14 @@ class Cache(object):
     _last_access = datetime.datetime.utcnow()
     _time_until_flush = datetime.timedelta(minutes=1)
 
-
     def __init__(self, cache_timeout_seconds=60):
         self._time_until_flush = datetime.timedelta(seconds=cache_timeout_seconds)
-
 
     def _test_for_flush(self):
         now = datetime.datetime.utcnow()
         if now - self._last_access > self._time_until_flush:
             _cache = {}  # Cache flushed
         self._last_access = now
-
 
     def get(self, domain, key=None, default=None):
         self._test_for_flush()
@@ -83,7 +76,6 @@ class Cache(object):
             return value
 
 
-
 class iPhotoLibrary(object):
     """A Python class for reading iPhoto libraries 'statically' including
     non-active iPhoto libraries.
@@ -95,23 +87,25 @@ class iPhotoLibrary(object):
     _libraryPath = None
     _cache = Cache()
 
+    # Cache Keys
     _ck_imageFromId = '_ck_imageFromId'
     _ck_collectionsByType = '_ck_collectionsByType'
     _ck_collectionByTypeName = '_ck_collectionByTypeName'
     _ck_collectionNamesByType = '_ck_collectionNamesByType'
     _ck_numCollectionsByType = '_ck_numCollectionsByType'
     _ck_childCaches = '_ck_childCaches'
+    _ck_masterImageList = '_ck_masterImageList'
 
-    def __init__(self, library_path):
+    def __init__(self, library_path, verbose=False):
         self._plist = None
         self._libraryPath = library_path
         self.flush_cache()
+        self.verbose = verbose
 
     def flush_cache(self):
         self._plist = plistlib.readPlist(os.path.join(self._libraryPath, 'AlbumData.xml'))
         self._albumDataStMTime = os.stat(self._libraryPath).st_mtime
         self._cache = Cache()
-
 
     def path(self):
         """Returns the path (relative or absolute) to the .iphotolibrary library that was
@@ -121,7 +115,8 @@ class iPhotoLibrary(object):
     def abspath(self):
         """Returns the absolute path to the .iphotolibrary library."""
         return os.path.abspath(self._libraryPath)
-###
+
+    ###
 
     def collections(self, type):
         list = self._cache.get(self._ck_collectionsByType, type)
@@ -136,13 +131,13 @@ class iPhotoLibrary(object):
                 list = {}
             return self._cache.set(self._ck_collectionsByType, type, list)
 
-
     def albums(self):
         return self.collections('Albums')
 
     def rolls(self):
         return self.collections('Rolls')
-###
+
+    ###
 
     def collection(self, type, name):
         key = type + '::' + name
@@ -159,7 +154,8 @@ class iPhotoLibrary(object):
 
     def roll(self, name):
         return self.collection('Rolls', name)
-###
+
+    ###
 
     def collection_names(self, type):
         names = self._cache.get(self._ck_collectionNamesByType, type)
@@ -174,7 +170,8 @@ class iPhotoLibrary(object):
 
     def roll_names(self):
         return self.collection_names('Rolls')
-###
+
+    ###
 
     def num_collections(self, type):
         num = self._cache.get(self._ck_numCollectionsByType, type)
@@ -192,7 +189,8 @@ class iPhotoLibrary(object):
 
     def num_rolls(self):
         return self.num_collections('Rolls')
-###
+
+    ###
 
     def image_from_id(self, id):
         """
@@ -220,8 +218,6 @@ class iPhotoLibrary(object):
             return self._cache.set(self._ck_masterImageList, images)
 
 
-
-
 class iPhotoCollection(object):
     """Not meant to be instantiated, only inherited"""
 
@@ -237,7 +233,7 @@ class iPhotoCollection(object):
         self._nameKey = nameKey
 
     def _cache(self):
-        return self._parentLibrary._cache.get(self._parentLibrary._ck_childCaches, self, lambda:Cache())
+        return self._parentLibrary._cache.get(self._parentLibrary._ck_childCaches, self, lambda: Cache())
 
     def name(self):
         """
@@ -245,7 +241,7 @@ class iPhotoCollection(object):
         :return: name
         """
         return self._plist[self._nameKey]
-    
+
     def images(self):
         """
         Returns a list of all images (as iPhotoImage objects) within the collection.
@@ -283,7 +279,6 @@ class iPhotoCollection(object):
         return len(self._plist['KeyList'])  # Not bothering to cache
 
 
-
 class iPhotoAlbum(iPhotoCollection):
     def __init__(self, albumPlist, parentLib):
         super(iPhotoAlbum, self).__init__(albumPlist, parentLib, 'AlbumName')
@@ -294,12 +289,9 @@ class iPhotoRoll(iPhotoCollection):
         super(iPhotoRoll, self).__init__(albumPlist, parentLib, 'RollName')
 
 
-
 class iPhotoImage:
-
     _parentLibrary = None
     _plist = None
-
 
     def __init__(self, photoPlist, parentLib):
         self._parentLibrary = parentLib
@@ -316,7 +308,7 @@ class iPhotoImage:
         and abspath() methods are probably more appropriate.
         """
         return self._plist['ImagePath']
-    
+
     def _rel_internal_path(self):
         """Returns a path relative to the .iphotoLibrary folder
         For instance if the iPhoto library path is
@@ -329,14 +321,14 @@ class iPhotoImage:
         absImgPath = self._plist['ImagePath']
         libName = os.path.basename(self._parentLibrary.abspath())
         return self._rel_internal_path_rel_path_recursive_helper(absImgPath, libName)
-    
+
     def _rel_internal_path_rel_path_recursive_helper(self, path, targetFolder):
         leadingEl, lastEl = os.path.split(path)
-        if lastEl == targetFolder: # Found it!
+        if lastEl == targetFolder:  # Found it!
             return ''
         else:
-            return os.path.join(self._rel_internal_path_rel_path_recursive_helper(leadingEl,targetFolder), lastEl)
-    
+            return os.path.join(self._rel_internal_path_rel_path_recursive_helper(leadingEl, targetFolder), lastEl)
+
     def abspath(self):
         return os.path.join(self._parentLibrary.abspath(), self._rel_internal_path())
 
@@ -347,36 +339,40 @@ class iPhotoImage:
     def caption(self):
         """Return the photo's caption"""
         return self._plist['Caption']
-    
+
     def filename(self):
         """Returns the original filename of the image, eg, IMG_4358.JPG"""
-        return os.path.basename( self.declared_image_path() )
+        return os.path.basename(self.declared_image_path())
 
     def type(self):
         """Returns the MediaType tag from iPhoto, eg, Image."""
         return self._plist['MediaType']
-        
-
-
-
 
 
 class iPhoto_FUSE_FS(LoggingMixIn, Operations):
-
-
     _ck_st_by_path = '_ck_st_by_path'
     _ck_collection_by_name = '_ck_collection_by_name'
     _ck_collection_by_path = '_ck_collection_by_path'
     _ck_folder_listing = '_ck_folder_listing'
     _ck_image_by_path = '_ck_image_by_path'
-    
 
-    def __init__(self, lib):
-        self.library = lib
+    def __init__(self, iphoto_lib, verbose=False):
+        self.__library = iphoto_lib
+        """:type: iPhotoLibrary"""
         self.rwlock = Lock()
+        self.verbose = verbose
 
     def _cache(self):
-        return self.library._cache.get(self.library._ck_childCaches, self, lambda:Cache())
+        return self.__library._cache.get(self.__library._ck_childCaches, self, lambda: Cache())
+
+    @property
+    def library(self):
+        """
+        Returns the corresponding iPhotoLibrary
+        :return: the iPhoto library
+        :rtype: iPhotoLibrary
+        """
+        return self.__library
 
     def add_uid_gid_pid(self, stDict):
         uid, gid, pid = fuse_get_context()
@@ -385,16 +381,15 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         stDict['st_pid'] = pid
         return stDict
 
-
-
     def open(self, path, flags=0, mode=0):
+        if self.verbose:
+            print("open: {} (flags={}, mode={}".format(path, flags, mode))
+
         image = self._cache().get(self._ck_image_by_path, path)
         if image is not None:
             return os.open(image.abspath(), flags, mode)
         else:
             return None
-
-
 
     def read(self, path, size, offset, fh):
         # If we've already enumerated the enclosing folder, then
@@ -403,9 +398,11 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         # enumerated the folder (such as a file with a fixed,
         # known location), then we need to get some info first.
 
-        # TODO
+        if self.verbose:
+            print("read: {} (size={}, offset={}".format(path, size, offset))
+
         image = self._cache().get(self._ck_image_by_path, path)
-#        if self._ck_image_by_path in self._cache and path in self._cache[self._ck_image_by_path]:
+        #        if self._ck_image_by_path in self._cache and path in self._cache[self._ck_image_by_path]:
         if image is not None:
             with self.rwlock:
                 os.lseek(fh, offset, 0)
@@ -413,6 +410,9 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         raise RuntimeError('unexpected path: %r' % path)
 
     def getattr(self, path, fh=None):
+        if self.verbose:
+            print("getattr: {}".format(path))
+
         cache = self._cache()
 
         st = cache.get(self._ck_st_by_path, path)
@@ -420,12 +420,12 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
             return st
         else:
 
-            if path == '/': # If cache is cleared, '/' stat needs to be specified
+            if path == '/':  # If cache is cleared, '/' stat needs to be specified
                 st = dict(st_mode=(S_IFDIR | 0755), st_nlink=4)  # 4 = . .. Albums Rolls
                 return cache.set(self._ck_st_by_path, path, st)
 
             elif path == '/Albums' or path == '/Rolls':
-                nlink = 2 + self.library.num_collections(path[1:])  # And remove leading slash
+                nlink = 2 + self.__library.num_collections(path[1:])  # And remove leading slash
                 now = time.mktime(datetime.datetime.now().timetuple())
                 st = self.add_uid_gid_pid(dict(
                     st_mode=(S_IFDIR | 0755), st_nlink=nlink,
@@ -439,9 +439,9 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                 if leadingEls == '/Albums' or leadingEls == '/Rolls':  # Asking us about specific album or roll
                     collName = tail
                     if leadingEls == '/Albums':
-                        collection = self.library.album(collName)
+                        collection = self.__library.album(collName)
                     elif leadingEls == '/Rolls':
-                        collection = self.library.roll(collName)
+                        collection = self.__library.roll(collName)
                     else:
                         collection = None
                     if collection is not None:
@@ -458,16 +458,16 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                     collType, collName = os.path.split(leadingEls)
                     image = None
                     if collType == '/Albums':
-                        image = self.library.album(collName).image_by_filename(imgName)
+                        image = self.__library.album(collName).image_by_filename(imgName)
 
                     elif collType == '/Rolls':
-                        image = self.library.roll(collName).image_by_filename(imgName)
+                        image = self.__library.roll(collName).image_by_filename(imgName)
 
                     if image is not None:
-                        st = os.lstat( image.abspath() )
+                        st = os.lstat(image.abspath())
                         st = self.add_uid_gid_pid(
                             dict((key, getattr(st, key)) for key in
-                            ('st_atime', 'st_ctime', 'st_mode', 'st_mtime', 'st_nlink', 'st_size')))
+                                 ('st_atime', 'st_ctime', 'st_mode', 'st_mtime', 'st_nlink', 'st_size')))
                         cache.set(self._ck_image_by_path, path, image)
                         return cache.set(self._ck_st_by_path, path, st)
 
@@ -477,12 +477,14 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     def readdir(self, path, fh=None):
         default = ['.', '..']
         cache = self._cache()
-        print path
+
+        if self.verbose:
+            print("readdir: {}".format(path))
+
 
         # Quick cache return
         listing = cache.get(self._ck_folder_listing, path)
         if listing is not None:
-            print listing
             return listing
 
         else:
@@ -490,10 +492,10 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                 return cache.set(self._ck_folder_listing, path, default + ['Albums', 'Rolls'])
 
             elif path == '/Albums':
-                return cache.set(self._ck_folder_listing, path, default + self.library.album_names())
+                return cache.set(self._ck_folder_listing, path, default + self.__library.album_names())
 
             elif path == '/Rolls':
-                return cache.set(self._ck_folder_listing, path, default + self.library.roll_names())
+                return cache.set(self._ck_folder_listing, path, default + self.__library.roll_names())
 
 
             # Ought to be listing albums or rolls, nothing else
@@ -503,34 +505,37 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
 
                 # Based on result of split we can assume something about leadingEls
                 if leadingEls == '/Albums':
-                    collection = self.library.album(collName)
+                    collection = self.__library.album(collName)
                 elif leadingEls == '/Rolls':
-                    collection = self.library.roll(collName)
+                    collection = self.__library.roll(collName)
                 else:
                     collection = None
 
                 if collection is not None:
                     return cache.set(self._ck_folder_listing, path, default + \
-                        [i.filename() for i in collection.images()])
+                                     [i.filename() for i in collection.images()])
 
         return []
 
-
-
-    
     def flush(self, path, fh):
+        if self.verbose:
+            print("flush: {}".format(path))
         return os.fsync(fh)
-        
+
     def fsync(self, path, datasync, fh):
+        if self.verbose:
+            print("fsync: {} (datasync={})".format(path, datasync))
         return os.fsync(fh)
-    
+
     def release(self, path, fh):
+        if self.verbose:
+            print("release: {}".format(path))
         return os.close(fh)
 
     chmod = os.chmod
     chown = os.chown
     readlink = os.readlink
-                
+
     # Disable unused operations:
     getxattr = None
     listxattr = None
@@ -541,8 +546,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
 def strip_end(text, suffix):
     if not text.endswith(suffix):
         return text
-    return text[:len(text)-len(suffix)]
-
+    return text[:len(text) - len(suffix)]
 
 
 def remove_mount(mount):
@@ -555,7 +559,7 @@ def remove_mount(mount):
 
 if __name__ == '__main__':
 
-    if len(argv) <2:
+    if len(argv) < 2:
         print('usage: %s iphotolibrary [mountpoint]' % argv[0])
         print("""
             If mountpoint is not specified or a dash -, a mount point will be made
@@ -568,7 +572,7 @@ if __name__ == '__main__':
         """)
         exit(1)
 
-    #libraryPath = '/Users/rob/Pictures/iPhoto Libraries/2014-2018 Colorado.photolibrary'
+    # libraryPath = '/Users/rob/Pictures/iPhoto Libraries/2014-2018 Colorado.photolibrary'
 
 
     # If dash (-) is passed as mountpoint or mountpoint is not
@@ -584,14 +588,13 @@ if __name__ == '__main__':
         libraryPath = libraryPath[:-1]
     base = strip_end(os.path.basename(libraryPath), '.photolibrary')
 
-
     if system() == 'Darwin':
         preferredMountLocation = '/Volumes'
     elif system() == 'Linux':
         preferredMountLocation = '/media'
     else:
         preferredMountLocation = '/media'
-    
+
     # Use the default location like /Volumes
     # and make the mount folder to be the library name
     if mount is None or mount == '-':
@@ -606,7 +609,7 @@ if __name__ == '__main__':
         # and remember that the current directory gets changed
         # so we want to register the absolute path
         atexit.register(remove_mount, os.path.abspath(mount))
-    
+
     # Make the mount location the library name but
     # put it in the location designated
     elif mount.startswith('-'):
@@ -622,8 +625,9 @@ if __name__ == '__main__':
         atexit.register(remove_mount, os.path.abspath(mount))
 
     try:
-        #fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
-        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath))), mount, nothreads=True, foreground=False, ro=True)
+        # fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
+        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath)), verbose=True),
+                    mount, nothreads=True, foreground=False, ro=True)
     except Exception, e:
         print(e)
         traceback.print_exc(file=sys.stderr)
