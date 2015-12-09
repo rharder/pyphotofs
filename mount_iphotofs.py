@@ -477,6 +477,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     def readdir(self, path, fh=None):
         default = ['.', '..']
         cache = self._cache()
+
         if self.verbose:
             print("readdir: {}".format(path))
 
@@ -624,8 +625,8 @@ if __name__ == '__main__':
         atexit.register(remove_mount, os.path.abspath(mount))
 
     try:
-        #fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
-        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath)), verbose=True),
+        # fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
+        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath)), verbose=False),
                     mount, nothreads=True, foreground=False, ro=True, allow_other=True)
     except Exception, e:
         print(e)
