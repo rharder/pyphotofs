@@ -592,6 +592,8 @@ if __name__ == '__main__':
         preferredMountLocation = '/Volumes'
     elif system() == 'Linux':
         preferredMountLocation = '/media'
+    elif system() == 'FreeBSD':
+        preferredMountLocation = '/mnt'
     else:
         preferredMountLocation = '/media'
 
