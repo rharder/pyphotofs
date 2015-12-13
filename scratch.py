@@ -1,26 +1,41 @@
 #!/usr/bin/env python
-# Python 2.7
-"""
-Mounts an iPhoto library as a filesystem.
-"""
+
 from __future__ import print_function
 
 import atexit
-import sys
 import traceback
 
-import shutil
+import sys
 from platform import system
+
+import shutil
 
 from fuse import FUSE
 
+from iphoto import *
 from iphotofuse import *
 
-__author__ = "Robert Harder"
-__email__ = "rob@iharder.net"
-__copyright__ = "This code is released into the Public Domain"
-__version__ = "0.1"
-__status__ = "Development"
+def main():
+    lib_path = "/Users/rob/Pictures/iPhoto Library.photolibrary"
+    ipl = iPhotoLibrary(lib_path)
+    print(ipl)
+    for a in ipl.albums:
+        print('\t', a)
+        for img in a.images:
+            print('\t\t', img)
+            pass
+
+    for r in ipl.rolls:
+        print('\t', r)
+        for img in r.images:
+            print('\t\t', img)
+            pass
+
+    argv = [sys.argv[0], lib_path, '-./mount']
+    mount(argv, foreground=True)
+    # with open('./mount/iPhoto Library/Albums/Photos/lion square.png') as f:
+    #     data = f.read()
+    # print(len(data))
 
 
 def strip_end(text, suffix):
@@ -36,7 +51,8 @@ def remove_mount(mount):
         print(e)
         traceback.print_exc(file=sys.stderr)
 
-def mount(argv):
+
+def mount(argv, foreground=False):
 
     if len(argv) < 2:
         print('usage: %s iphotolibrary [mountpoint]' % argv[0])
@@ -108,12 +124,13 @@ def mount(argv):
     try:
         # fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
         fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath)), verbose=False),
-                    mount, nothreads=True, foreground=False, ro=True, allow_other=True)
+                    mount, nothreads=True, foreground=foreground, ro=True, allow_other=True)
     except Exception, e:
         print(e)
         traceback.print_exc(file=sys.stderr)
         exit(1)
 
 
-if __name__ == '__main__':
-    mount(sys.argv)
+
+if __name__ == "__main__":
+    main()
