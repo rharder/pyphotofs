@@ -1,4 +1,8 @@
-#!/usr/bin/env python
+"""
+Some classes for working with iPhoto libraries.
+
+Should work with Python 2.7 and 3.0+
+"""
 
 import datetime
 import math
@@ -7,6 +11,9 @@ import plistlib
 
 
 class Cache(object):
+    """
+    Used internally to cache filesystem data to avoid constantly re-reading of AlbumData.xml.
+    """
 
     def __init__(self, mtime_file=None, cache_timeout_seconds=1, verbose=False):
         # self._time_until_flush = datetime.timedelta(seconds=cache_timeout_seconds)
@@ -25,7 +32,6 @@ class Cache(object):
         """
         Checks to see if cache should be flushed based on either a change in an underlying file
         or if enough time has passed.
-        :return:
         """
         now = datetime.datetime.utcnow()
         if now - self._last_access > self._time_until_flush_check:  # Have we had a delay since the last access
