@@ -19,9 +19,8 @@ from iphotofuse import *
 def main():
     lib_path = "/Users/rob/Pictures/iPhoto Library.photolibrary"
     plain_lib = iPhotoLibrary(lib_path, verbose=False)
-    levi_keatra_lib = iPhotoLibrary('2007 Levi and Keatra Wedding')
 
-    for ipl in [plain_lib]:#, levi_keatra_lib]:
+    for ipl in [plain_lib]:
         print(ipl)
         for a in ipl.albums:
             print('\t', a)
