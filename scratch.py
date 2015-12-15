@@ -10,14 +10,15 @@ from platform import system
 
 import shutil
 
-from fuse import FUSE
+# from fuse import FUSE
 
 from iphoto import *
-from iphotofuse import *
+# from iphotofuse import *
 
 
 def main():
     lib_path = "/Users/rob/Pictures/iPhoto Library.photolibrary"
+    lib_path = "c:\\temp\\2007 Levi and Keatra Wedding"
     plain_lib = iPhotoLibrary(lib_path, verbose=False)
 
     for ipl in [plain_lib]:
@@ -50,8 +51,8 @@ def strip_end(text, suffix):
 def remove_mount(mount):
     try:
         shutil.rmtree(mount)
-    except OSError, e:
-        print(e)
+    except OSError:#, e:
+        # print(e)
         traceback.print_exc(file=sys.stderr)
 
 
@@ -125,11 +126,11 @@ def mount(argv, foreground=False):
         atexit.register(remove_mount, os.path.abspath(mount))
 
     try:
-        # fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
-        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath), verbose=False), verbose=False),
-                    mount, nothreads=True, foreground=foreground, ro=True, allow_other=True)
-    except Exception, e:
-        print(e)
+        pass
+        # fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath), verbose=False), verbose=False),
+        #             mount, nothreads=True, foreground=foreground, ro=True, allow_other=True)
+    except Exception:#, e:
+        # print(e)
         traceback.print_exc(file=sys.stderr)
         exit(1)
 

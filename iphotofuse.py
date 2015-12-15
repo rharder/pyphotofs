@@ -102,14 +102,14 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         else:
 
             if path == '/':  # If cache is cleared, '/' stat needs to be specified
-                st = dict(st_mode=(S_IFDIR | 0755), st_nlink=4)  # 4 = . .. Albums Rolls
+                st = dict(st_mode=(S_IFDIR | 755), st_nlink=4)  # 4 = . .. Albums Rolls
                 return cache.set(self._ck_st_by_path, path, st)
 
             elif path == '/Albums' or path == '/Rolls':
                 nlink = 2 + self._library.num_collections(path[1:])  # And remove leading slash
                 now = time.mktime(datetime.datetime.now().timetuple())
                 st = self.add_uid_gid_pid(dict(
-                    st_mode=(S_IFDIR | 0755), st_nlink=nlink,
+                    st_mode=(S_IFDIR | 755), st_nlink=nlink,
                     st_ctime=now, st_atime=now, st_mtime=now))
                 return cache.set(self._ck_st_by_path, path, st)
 
@@ -129,7 +129,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                         nlink = 2 + collection.num_images
                         now = time.mktime(datetime.datetime.now().timetuple())
                         st = self.add_uid_gid_pid(dict(
-                            st_mode=(S_IFDIR | 0755), st_nlink=nlink,
+                            st_mode=(S_IFDIR | 755), st_nlink=nlink,
                             st_ctime=now, st_atime=now, st_mtime=now))
                         return cache.set(self._ck_st_by_path, path, st)
 
