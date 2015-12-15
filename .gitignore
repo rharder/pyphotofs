@@ -1,0 +1,7 @@
+.idea
+.idea/**
+desktop.ini
+*.lnk
+__pycache__
+__pycache__/**
+
