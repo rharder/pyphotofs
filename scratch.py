@@ -15,21 +15,25 @@ from fuse import FUSE
 from iphoto import *
 from iphotofuse import *
 
+
 def main():
     lib_path = "/Users/rob/Pictures/iPhoto Library.photolibrary"
-    ipl = iPhotoLibrary(lib_path)
-    print(ipl)
-    for a in ipl.albums:
-        print('\t', a)
-        for img in a.images:
-            print('\t\t', img)
-            pass
+    plain_lib = iPhotoLibrary(lib_path, verbose=False)
+    levi_keatra_lib = iPhotoLibrary('2007 Levi and Keatra Wedding')
 
-    for r in ipl.rolls:
-        print('\t', r)
-        for img in r.images:
-            print('\t\t', img)
-            pass
+    for ipl in [plain_lib]:#, levi_keatra_lib]:
+        print(ipl)
+        for a in ipl.albums:
+            print('\t', a)
+            for img in a.images:
+                print('\t\t', img)
+                pass
+
+        for r in ipl.rolls:
+            print('\t', r)
+            for img in r.images:
+                print('\t\t', img)
+                pass
 
     argv = [sys.argv[0], lib_path, '-./mount']
     mount(argv, foreground=True)
@@ -123,7 +127,7 @@ def mount(argv, foreground=False):
 
     try:
         # fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
-        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath)), verbose=False),
+        fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(os.path.abspath(libraryPath), verbose=False), verbose=False),
                     mount, nothreads=True, foreground=foreground, ro=True, allow_other=True)
     except Exception, e:
         print(e)

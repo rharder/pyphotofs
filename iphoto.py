@@ -7,17 +7,36 @@ import plistlib
 
 
 class Cache(object):
-    _cache = {}
-    _last_access = datetime.datetime.utcnow()
-    _time_until_flush = datetime.timedelta(minutes=1)
 
-    def __init__(self, cache_timeout_seconds=60):
-        self._time_until_flush = datetime.timedelta(seconds=cache_timeout_seconds)
+    def __init__(self, mtime_file=None, cache_timeout_seconds=1, verbose=False):
+        # self._time_until_flush = datetime.timedelta(seconds=cache_timeout_seconds)
+        self.verbose = verbose
+        self._cache = {}
+        self._time_until_flush_check = datetime.timedelta(seconds=cache_timeout_seconds)  # In busy times, don't bother checking mtime
+        self._mtime_file = mtime_file  # File who's modification time will determine cache staleness
+        if mtime_file:
+            self._last_mtime = os.stat(self._mtime_file).st_mtime  # Previously-known mtime
+        self._last_access = datetime.datetime.utcnow()  # Last time we accessed the cache
+
+    def __str__(self):
+        return "[Cache based on {}]".format(self._mtime_file)
 
     def _test_for_flush(self):
+        """
+        Checks to see if cache should be flushed based on either a change in an underlying file
+        or if enough time has passed.
+        :return:
+        """
         now = datetime.datetime.utcnow()
-        if now - self._last_access > self._time_until_flush:
-            _cache = {}  # Cache flushed
+        if now - self._last_access > self._time_until_flush_check:  # Have we had a delay since the last access
+            if self._mtime_file is None:
+                self._cache = {}
+                if self.verbose:
+                    print("cache flushed", str(self))
+            elif os.stat(self._mtime_file).st_mtime > self._last_mtime:
+                self._cache = {}  # Cache flushed
+                if self.verbose:
+                    print("cache flushed", str(self))
         self._last_access = now
 
     def get(self, domain, key=None, default=None):
@@ -28,13 +47,21 @@ class Cache(object):
         # in the cache as is often the case.
         if domain in self._cache:
             if key is None:
+                if self.verbose:
+                    print("cache hit domain={}, key={}".format(domain, key), str(self))
                 return self._cache[domain]
             else:  # Cache miss
                 if key in self._cache[domain]:
+                    if self.verbose:
+                        print("cache hit domain={}, key={}".format(domain, key), str(self))
                     return self._cache[domain][key]
                 else:
+                    if self.verbose:
+                        print("cache miss domain={}, key={}".format(domain, key), str(self))
                     return default.__call__() if callable(default) else default
         else:
+            if self.verbose:
+                print("cache miss domain={}, key={}".format(domain, key), str(self))
             return default.__call__() if callable(default) else default
 
     def set(self, domain, key, value=None):
@@ -43,6 +70,9 @@ class Cache(object):
         """
 
         self._test_for_flush()
+
+        if self.verbose:
+            print("cache set domain={}, key={}, value={}".format(domain, key, value), str(self))
 
         # If value is None, that means we're setting an item
         # directly in the cache as opposed to a dictionary
@@ -63,11 +93,6 @@ class iPhotoLibrary(object):
     Author: Robert Harder
     """
 
-    _plist = None
-    _albumDataStMTime = None
-    _libraryPath = None
-    _cache = Cache()
-
     # Cache Keys
     _ck_imageFromId = '_ck_imageFromId'
     _ck_imageFromGuid = '_ck_imageFromGuid'
@@ -79,9 +104,12 @@ class iPhotoLibrary(object):
     _ck_masterImageList = '_ck_masterImageList'
 
     def __init__(self, library_path, verbose=False):
-        self._plist = None
+
+        # self._albumDataStMTime = None
         self._libraryPath = library_path
-        self.flush_cache()
+        self._album_data_xml = os.path.join(self._libraryPath, 'AlbumData.xml')
+        self._plist = plistlib.readPlist(self._album_data_xml)
+        self._cache = Cache(mtime_file=self._album_data_xml, verbose=verbose)
         self.verbose = verbose
 
     def __str__(self):
@@ -90,10 +118,9 @@ class iPhotoLibrary(object):
             ', '.join(self.album_names)
         )
 
-    def flush_cache(self):
-        self._plist = plistlib.readPlist(os.path.join(self._libraryPath, 'AlbumData.xml'))
-        self._albumDataStMTime = os.stat(self._libraryPath).st_mtime
-        self._cache = Cache()
+    @property
+    def cache(self):
+        return self._cache
 
     @property
     def path(self):
@@ -328,9 +355,6 @@ class iPhotoLibrary(object):
 class iPhotoCollection(object):
     """Not meant to be instantiated, only inherited"""
 
-    _parentLibrary = None
-    _plist = None
-    _nameKey = ''
     _ck_collectionImagesByTypeName = '_ck_collectionImagesByTypeName'
     _ck_imageByTypeNameFilename = '_ck_imageByTypeNameFilename'
 
@@ -343,8 +367,11 @@ class iPhotoCollection(object):
         name_key = self._nameKey.replace('Name', '')
         return "[iPhoto {} '{}', images={}]".format(name_key, self.name, self.num_images)
 
-    def _cache(self):
-        return self._parentLibrary._cache.get(self._parentLibrary._ck_childCaches, self, lambda: Cache())
+    @property
+    def cache(self):
+        return self._parentLibrary.cache
+    # def _cache(self):
+    #     return self._parentLibrary._cache.get(self._parentLibrary._ck_childCaches, self, lambda: Cache())
 
     @property
     def name(self):
@@ -361,7 +388,7 @@ class iPhotoCollection(object):
         :return: a list of images
         :rtype: [iPhotoImage]
         """
-        cache = self._cache()
+        cache = self.cache
         key = self._nameKey + '::' + self.name
         list = cache.get(self._ck_collectionImagesByTypeName, key)
         if list is not None:
@@ -378,7 +405,7 @@ class iPhotoCollection(object):
         :return: The image with the matching filename
         :rypte: iPhotoImage
         """
-        cache = self._cache()
+        cache = self.cache
         key = self._nameKey + '::' + self.name + '::' + filename
         image = cache.get(self._ck_imageByTypeNameFilename, key)
         if image is not None:

@@ -30,13 +30,17 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     releasedir = None
 
     def __init__(self, iphoto_lib, verbose=False):
-        self.__library = iphoto_lib
+        self._library = iphoto_lib
         """:type: iPhotoLibrary"""
         self.rwlock = Lock()
         self.verbose = verbose
 
-    def _cache(self):
-        return self.__library._cache.get(self.__library._ck_childCaches, self, lambda: Cache())
+    @property
+    def cache(self):
+        return self._library.cache
+    #
+    # def _cache(self):
+    #     return self.__library._cache.get(self.__library._ck_childCaches, self, lambda: Cache())
 
     @property
     def library(self):
@@ -45,7 +49,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         :return: the iPhoto library
         :rtype: iPhotoLibrary
         """
-        return self.__library
+        return self._library
 
     def add_uid_gid_pid(self, stDict):
         uid, gid, pid = fuse_get_context()
@@ -59,7 +63,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
             print("open: {} (flags={}, mode={}".format(path, flags, mode))
 
         self.getattr(path)  # Loads info about image to cache
-        image = self._cache().get(self._ck_image_by_path, path)
+        image = self.cache.get(self._ck_image_by_path, path)
         """:type: iphoto.iPhotoImage"""
         if image is not None:
             return os.open(image.abspath, flags, mode)
@@ -76,7 +80,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         if self.verbose:
             print("read: {} (size={}, offset={}".format(path, size, offset))
 
-        image = self._cache().get(self._ck_image_by_path, path)
+        image = self.cache.get(self._ck_image_by_path, path)
         """:type: iphoto.iPhotoImage"""
         #        if self._ck_image_by_path in self._cache and path in self._cache[self._ck_image_by_path]:
         if image is not None:
@@ -89,7 +93,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         if self.verbose:
             print("getattr: {}".format(path))
 
-        cache = self._cache()
+        cache = self.cache
         """:type: iphoto.Cache"""
 
         st = cache.get(self._ck_st_by_path, path)
@@ -102,7 +106,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                 return cache.set(self._ck_st_by_path, path, st)
 
             elif path == '/Albums' or path == '/Rolls':
-                nlink = 2 + self.__library.num_collections(path[1:])  # And remove leading slash
+                nlink = 2 + self._library.num_collections(path[1:])  # And remove leading slash
                 now = time.mktime(datetime.datetime.now().timetuple())
                 st = self.add_uid_gid_pid(dict(
                     st_mode=(S_IFDIR | 0755), st_nlink=nlink,
@@ -116,9 +120,9 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                 if leadingEls == '/Albums' or leadingEls == '/Rolls':  # Asking us about specific album or roll
                     collName = tail
                     if leadingEls == '/Albums':
-                        collection = self.__library.album(collName)
+                        collection = self._library.album(collName)
                     elif leadingEls == '/Rolls':
-                        collection = self.__library.roll(collName)
+                        collection = self._library.roll(collName)
                     else:
                         collection = None
                     if collection is not None:
@@ -137,11 +141,11 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                     """:type: iphoto.iPhotoImage"""
 
                     if collType == '/Albums':
-                        image = self.__library.album(collName).image_by_filename(imgName)
+                        image = self._library.album(collName).image_by_filename(imgName)
                         """:type: iphoto.iPhotoImage"""
 
                     elif collType == '/Rolls':
-                        image = self.__library.roll(collName).image_by_filename(imgName)
+                        image = self._library.roll(collName).image_by_filename(imgName)
                         """:type: iphoto.iPhotoImage"""
 
                     if image is not None:
@@ -157,7 +161,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
 
     def readdir(self, path, fh=None):
         default = ['.', '..']
-        cache = self._cache()
+        cache = self.cache
 
         if self.verbose:
             print("readdir: {}".format(path))
@@ -172,10 +176,10 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                 return cache.set(self._ck_folder_listing, path, default + ['Albums', 'Rolls'])
 
             elif path == '/Albums':
-                return cache.set(self._ck_folder_listing, path, default + self.__library.album_names)
+                return cache.set(self._ck_folder_listing, path, default + self._library.album_names)
 
             elif path == '/Rolls':
-                return cache.set(self._ck_folder_listing, path, default + self.__library.roll_names)
+                return cache.set(self._ck_folder_listing, path, default + self._library.roll_names)
 
 
             # Ought to be listing albums or rolls, nothing else
@@ -185,9 +189,9 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
 
                 # Based on result of split we can assume something about leadingEls
                 if leadingEls == '/Albums':
-                    collection = self.__library.album(collName)
+                    collection = self._library.album(collName)
                 elif leadingEls == '/Rolls':
-                    collection = self.__library.roll(collName)
+                    collection = self._library.roll(collName)
                 else:
                     collection = None
 
