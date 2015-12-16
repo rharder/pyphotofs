@@ -129,6 +129,11 @@ class iPhotoLibrary(object):
         return self._cache
 
     @property
+    def name(self):
+        base, _ = os.path.splitext(os.path.basename(self._libraryPath))
+        return base
+
+    @property
     def path(self):
         """Returns the path (relative or absolute) to the .iphotolibrary library that was
         originally provided when instantiating the class.

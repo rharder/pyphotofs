@@ -1,13 +1,16 @@
 #!/usr/bin/env python
-
-
-
+import atexit
 import time
+import traceback
 from errno import ENOENT
+from platform import system
 from stat import S_IFDIR
 from threading import Lock
 
-from fuse import FuseOSError, Operations, LoggingMixIn, fuse_get_context
+import shutil
+
+import sys
+from fuse import FuseOSError, Operations, LoggingMixIn, fuse_get_context, FUSE
 
 from iphoto import *
 
@@ -18,6 +21,8 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
     _ck_collection_by_path = '_ck_collection_by_path'
     _ck_folder_listing = '_ck_folder_listing'
     _ck_image_by_path = '_ck_image_by_path'
+
+    _CHMOD = 755
 
     chmod = os.chmod
     chown = os.chown
@@ -31,16 +36,13 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
 
     def __init__(self, iphoto_lib, verbose=False):
         self._library = iphoto_lib
-        """:type: iPhotoLibrary"""
+        """:type: iphoto.iPhotoLibrary"""
         self.rwlock = Lock()
         self.verbose = verbose
 
     @property
     def cache(self):
         return self._library.cache
-    #
-    # def _cache(self):
-    #     return self.__library._cache.get(self.__library._ck_childCaches, self, lambda: Cache())
 
     @property
     def library(self):
@@ -102,14 +104,14 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         else:
 
             if path == '/':  # If cache is cleared, '/' stat needs to be specified
-                st = dict(st_mode=(S_IFDIR | 755), st_nlink=4)  # 4 = . .. Albums Rolls
+                st = dict(st_mode=(S_IFDIR | iPhoto_FUSE_FS._CHMOD), st_nlink=4)  # 4 = . .. Albums Rolls
                 return cache.set(self._ck_st_by_path, path, st)
 
             elif path == '/Albums' or path == '/Rolls':
                 nlink = 2 + self._library.num_collections(path[1:])  # And remove leading slash
                 now = time.mktime(datetime.datetime.now().timetuple())
                 st = self.add_uid_gid_pid(dict(
-                    st_mode=(S_IFDIR | 755), st_nlink=nlink,
+                    st_mode=(S_IFDIR | iPhoto_FUSE_FS._CHMOD), st_nlink=nlink,
                     st_ctime=now, st_atime=now, st_mtime=now))
                 return cache.set(self._ck_st_by_path, path, st)
 
@@ -129,7 +131,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                         nlink = 2 + collection.num_images
                         now = time.mktime(datetime.datetime.now().timetuple())
                         st = self.add_uid_gid_pid(dict(
-                            st_mode=(S_IFDIR | 755), st_nlink=nlink,
+                            st_mode=(S_IFDIR | iPhoto_FUSE_FS._CHMOD), st_nlink=nlink,
                             st_ctime=now, st_atime=now, st_mtime=now))
                         return cache.set(self._ck_st_by_path, path, st)
 
@@ -215,3 +217,89 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         if self.verbose:
             print("release: {}".format(path))
         return os.close(fh)
+
+
+
+
+def mount_iphotofs(library, mount=None, foreground=False):
+    """
+
+    :param iphoto.iPhotoLibrary library:
+    :param str mount:
+    :return: None
+    """
+
+    def remove_mount(mount):
+        """
+        Used with atexit to remove mount point after FUSE is done with it.
+        :param str mount: the mount point
+        :return: None
+        """
+        try:
+            shutil.rmtree(mount)
+        except OSError:
+            traceback.print_exc(file=sys.stderr)
+
+
+    this_system = system()
+    if this_system == 'Darwin':
+        preferredMountLocation = '/Volumes'
+    elif this_system == 'Linux':
+        preferredMountLocation = '/media'
+    elif this_system == 'FreeBSD':
+        preferredMountLocation = '/mnt'
+    else:
+        preferredMountLocation = '/media'
+
+    # If dash (-) is passed as mountpoint or mountpoint is not
+    # specified then it will make a mount point based on the
+    # name of the iPhoto library.
+
+
+    # Use the default location like /Volumes
+    # and make the mount folder to be the library name
+    if mount is None or mount == '-':
+        mount = os.path.join(preferredMountLocation, library.name)
+        try:
+            os.makedirs(mount)
+        except OSError:
+            if not os.path.isdir(mount):
+                raise
+
+        # Be sure to remove the mount point we just created
+        # and remember that the current directory gets changed
+        # so we want to register the absolute path
+        atexit.register(remove_mount, os.path.abspath(mount))
+
+    # Make the mount location the library name but
+    # put it in the location designated
+    elif mount.startswith('-'):
+        mount = os.path.join(mount[1:], library.name)
+        try:
+            os.makedirs(mount)
+        except OSError:
+            if not os.path.isdir(mount):
+                raise
+        # Be sure to remove the mount point we just created
+        # and remember that the current directory gets changed
+        # so we want to register the absolute path
+        atexit.register(remove_mount, os.path.abspath(mount))
+
+
+    # try:
+    fuse = FUSE(
+                iPhoto_FUSE_FS(library),
+                mount,
+                nothreads=False,
+                foreground=foreground,
+                ro=True,
+                allow_other=True,
+                fsname=library.name,
+                volname=library.name
+                )
+    return fuse
+    # except Exception:
+    #     traceback.print_exc(file=sys.stderr)
+    #     exit(1)
+
+
