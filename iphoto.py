@@ -9,6 +9,12 @@ import math
 import os
 import plistlib
 
+__author__ = "Robert Harder"
+__email__ = "rob@iharder.net"
+__copyright__ = "This code is released into the Public Domain"
+__version__ = "0.1"
+__status__ = "Development"
+
 
 class Cache(object):
     """
@@ -19,7 +25,8 @@ class Cache(object):
         # self._time_until_flush = datetime.timedelta(seconds=cache_timeout_seconds)
         self.verbose = verbose
         self._cache = {}
-        self._time_until_flush_check = datetime.timedelta(seconds=cache_timeout_seconds)  # In busy times, don't bother checking mtime
+        self._time_until_flush_check = datetime.timedelta(
+            seconds=cache_timeout_seconds)  # In busy times, don't bother checking mtime
         self._mtime_file = mtime_file  # File who's modification time will determine cache staleness
         if mtime_file:
             self._last_mtime = os.stat(self._mtime_file).st_mtime  # Previously-known mtime
@@ -120,8 +127,8 @@ class iPhotoLibrary(object):
 
     def __str__(self):
         return "[iPhoto Library '{}', images={}, albums={} ({})]".format(
-            self.name, self.num_images, self.num_albums,
-            ', '.join(self.album_names)
+                self.name, self.num_images, self.num_albums,
+                ', '.join(self.album_names)
         )
 
     @property
@@ -381,6 +388,7 @@ class iPhotoCollection(object):
     @property
     def cache(self):
         return self._parentLibrary.cache
+
     # def _cache(self):
     #     return self._parentLibrary._cache.get(self._parentLibrary._ck_childCaches, self, lambda: Cache())
 
@@ -458,7 +466,6 @@ class iPhotoImage:
     def __str__(self):
         return "[iPhoto Image '{}', size={}]".format(self.filename, human_size(self.size))
 
-
     def _rel_internal_path(self):
         """Returns a path relative to the .iphotoLibrary folder
         For instance if the iPhoto library path is
@@ -478,7 +485,6 @@ class iPhotoImage:
             return ''
         else:
             return os.path.join(self._rel_internal_path_rel_path_recursive_helper(leadingEl, targetFolder), lastEl)
-
 
     @property
     def declared_image_path(self):
