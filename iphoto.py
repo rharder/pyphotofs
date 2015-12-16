@@ -120,7 +120,7 @@ class iPhotoLibrary(object):
 
     def __str__(self):
         return "[iPhoto Library '{}', images={}, albums={} ({})]".format(
-            self._libraryPath, self.num_images, self.num_albums,
+            self.name, self.num_images, self.num_albums,
             ', '.join(self.album_names)
         )
 

@@ -287,6 +287,9 @@ def mount_iphotofs(library, mount=None, foreground=False):
 
 
     # try:
+    print("Library", str(library))
+    print("Library name", library.name)
+    print("Mounting to", mount)
     fuse = FUSE(
                 iPhoto_FUSE_FS(library),
                 mount,
