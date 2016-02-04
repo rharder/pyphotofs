@@ -24,11 +24,6 @@ __status__ = "Development"
 
 def main():
 
-    lib_path = "/Users/rob/Pictures/iPhoto Library.photolibrary"
-    lib_path = "./2007 Levi and Keatra Wedding"
-    # plain_lib = iPhotoLibrary(lib_path, verbose=False)
-    sys.argv.append(lib_path)
-    sys.argv.append('-./mount')
 
     if len(sys.argv) < 2:
         print('usage: %s iphotolibrary [mountpoint]' % sys.argv[0])
