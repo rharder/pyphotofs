@@ -80,6 +80,9 @@ class Cache(object):
     def set(self, domain, key, value=None):
         """
         Sets a value in the cache.
+        :param key:
+        :param domain:
+        :param value:
         """
 
         self._test_for_flush()
@@ -127,8 +130,8 @@ class iPhotoLibrary(object):
 
     def __str__(self):
         return "[iPhoto Library '{}', images={}, albums={} ({})]".format(
-                self.name, self.num_images, self.num_albums,
-                ', '.join(self.album_names)
+            self.name, self.num_images, self.num_albums,
+            ', '.join(self.album_names)
         )
 
     @property
@@ -159,27 +162,27 @@ class iPhotoLibrary(object):
 
     ###
 
-    def collections(self, type):
+    def collections(self, c_type):
         """
         Returns a list of collections within this iPhoto Library.  Typically there will be,
         at a minimum, collections named Photos, Flagged, Last 12 Months, and Last Import.
         The parameter type should be either 'Albums' or 'Rolls' to indicate the kind
         of collections to return.
-        :param str type:
+        :param str c_type:
         :return: the collection
         :rtype: [iPhotoCollection]
         """
-        list = self._cache.get(self._ck_collectionsByType, type)
-        if list is not None:
-            return list
+        coll_list = self._cache.get(self._ck_collectionsByType, c_type)
+        if coll_list is not None:
+            return coll_list
         else:
-            if type == 'Albums':
-                list = [iPhotoAlbum(plist, self) for plist in self._plist['List of ' + type]]
-            elif type == 'Rolls':
-                list = [iPhotoRoll(plist, self) for plist in self._plist['List of ' + type]]
+            if c_type == 'Albums':
+                coll_list = [iPhotoAlbum(plist, self) for plist in self._plist['List of ' + c_type]]
+            elif c_type == 'Rolls':
+                coll_list = [iPhotoRoll(plist, self) for plist in self._plist['List of ' + c_type]]
             else:
-                list = {}
-            return self._cache.set(self._ck_collectionsByType, type, list)
+                coll_list = {}
+            return self._cache.set(self._ck_collectionsByType, c_type, coll_list)
 
     @property
     def albums(self):
@@ -201,20 +204,20 @@ class iPhotoLibrary(object):
 
     ###
 
-    def collection(self, type, name):
+    def collection(self, c_type, name):
         """
         Returns a collection of type 'Album' or 'Roll' with the given name
-        :param str type: the type of collection ('Album' or 'Roll')
+        :param str c_type: the type of collection ('Album' or 'Roll')
         :param str name: the name of the collection
         :return: the collection
         :rtype: iPhotoCollection
         """
-        key = type + '::' + name
+        key = c_type + '::' + name
         coll = self._cache.get(self._ck_collectionByTypeName, key)
         if coll is not None:
             return coll
         else:
-            for c in self.collections(type):
+            for c in self.collections(c_type):
                 if c.name == name:
                     return self._cache.set(self._ck_collectionByTypeName, key, c)
 
@@ -240,20 +243,20 @@ class iPhotoLibrary(object):
 
     ###
 
-    def collection_names(self, type):
+    def collection_names(self, c_type):
         """
         The names of all the collections of the given type in the library.
         The type can be 'Album' or 'Roll'.
-        :param str type: the type of collection
+        :param str c_type: the type of collection
         :return: list of collection names
         :rtype: [str]
         """
-        names = self._cache.get(self._ck_collectionNamesByType, type)
+        names = self._cache.get(self._ck_collectionNamesByType, c_type)
         if names is not None:
             return names
         else:
-            names = [c.name for c in self.collections(type)]
-            return self._cache.set(self._ck_collectionNamesByType, type, names)
+            names = [c.name for c in self.collections(c_type)]
+            return self._cache.set(self._ck_collectionNamesByType, c_type, names)
 
     @property
     def album_names(self):
@@ -277,23 +280,23 @@ class iPhotoLibrary(object):
 
     ###
 
-    def num_collections(self, type):
+    def num_collections(self, c_type):
         """
         The number of collections of the given type.
         The type can be 'Album' or 'Roll'.
-        :param str type: the type of collection
+        :param str c_type: the type of collection
         :return: number of collections
         :rtype: int
         """
-        num = self._cache.get(self._ck_numCollectionsByType, type)
+        num = self._cache.get(self._ck_numCollectionsByType, c_type)
         if num is not None:
             return num
         else:
-            if 'List of ' + type in self._plist:
-                num = len(self._plist['List of ' + type])
+            if 'List of ' + c_type in self._plist:
+                num = len(self._plist['List of ' + c_type])
             else:
                 num = 0
-            return self._cache.set(self._ck_numCollectionsByType, type, num)
+            return self._cache.set(self._ck_numCollectionsByType, c_type, num)
 
     @property
     def num_albums(self):
@@ -317,31 +320,31 @@ class iPhotoLibrary(object):
 
     ###
 
-    def image_from_id(self, id):
+    def image_from_id(self, img_id):
         """
         Returns an iPhotoImage object based on the ID of the image.
-        :param str id: The unique ID of the image, which is used internally within the .iphotolibrary
+        :param str img_id: The unique ID of the image, which is used internally within the .iphotolibrary
         :return: an iPhotoImage object
         :rtype: iPhotoImage
         """
-        img = self._cache.get(self._ck_imageFromId, id)
+        img = self._cache.get(self._ck_imageFromId, img_id)
         if img is not None:
             return img
         else:
-            img_plist = self._plist['Master Image List'][id]
+            img_plist = self._plist['Master Image List'][img_id]
             if img_plist is None:
                 img = None
             else:
                 img = iPhotoImage(img_plist, self)
-            return self._cache.set(self._ck_imageFromId, id, img)
+            return self._cache.set(self._ck_imageFromId, img_id, img)
 
     def image_from_guid(self, guid):
         img = self._cache.get(self._ck_imageFromGuid, id)
         if img is not None:
             return img
         else:
-            mil = self._plist['Master Image List']
-            for _, img_plist in self._plist['Master Image List'].items():
+            mil = self._plist.get('Master Image List', {})
+            for _, img_plist in mil.items():
                 if img_plist.get('GUID') == guid:
                     img = iPhotoImage(img_plist, self)
                     return self._cache.set(self._ck_imageFromGuid, id, img)
@@ -357,7 +360,7 @@ class iPhotoLibrary(object):
         if images is not None:
             return images
         else:
-            images = [self.image_from_id(id) for id in self._plist['Master Image List']]
+            images = [self.image_from_id(img_id) for img_id in self._plist.get('Master Image List', {})]
             return self._cache.set(self._ck_masterImageList, images)
 
     @property
@@ -409,12 +412,12 @@ class iPhotoCollection(object):
         """
         cache = self.cache
         key = self._nameKey + '::' + self.name
-        list = cache.get(self._ck_collectionImagesByTypeName, key)
-        if list is not None:
-            return list
+        img_list = cache.get(self._ck_collectionImagesByTypeName, key)
+        if img_list is not None:
+            return img_list
         else:
-            list = [self._parentLibrary.image_from_id(id) for id in self._plist['KeyList']]
-            return cache.set(self._ck_collectionImagesByTypeName, key, list)
+            img_list = [self._parentLibrary.image_from_id(img_id) for img_id in self._plist.get('KeyList', [])]
+            return cache.set(self._ck_collectionImagesByTypeName, key, img_list)
 
     def image_by_filename(self, filename):
         """
@@ -430,8 +433,8 @@ class iPhotoCollection(object):
         if image is not None:
             return image
         else:
-            for id in self._plist['KeyList']:
-                image = self._parentLibrary.image_from_id(id)
+            for img_id in self._plist.get('KeyList', []):
+                image = self._parentLibrary.image_from_id(img_id)
                 if image is not None and image.filename == filename:
                     return cache.set(self._ck_imageByTypeNameFilename, key, image)
 
@@ -506,12 +509,12 @@ class iPhotoImage:
     @property
     def thumbpath(self):
         # TODO: This needs to adapt just as the image path is hard coded in AlbumData.xml
-        return self._plist['ThumbPath']
+        return self._plist.get('ThumbPath')
 
     @property
     def caption(self):
         """Return the photo's caption"""
-        return self._plist['Caption']
+        return self._plist.get('Caption')
 
     @property
     def filename(self):
@@ -521,11 +524,11 @@ class iPhotoImage:
     @property
     def type(self):
         """Returns the MediaType tag from iPhoto, eg, Image."""
-        return self._plist['MediaType']
+        return self._plist.get('MediaType')
 
     @property
     def guid(self):
-        return self._plist['GUID']
+        return self._plist.get('GUID')
 
     @property
     def size(self):
