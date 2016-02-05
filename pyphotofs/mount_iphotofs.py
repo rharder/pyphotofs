@@ -1,20 +1,11 @@
 #!/usr/bin/env python
-# Python 2.7
+# Should work with Python 2 or 3
 """
 Mounts an iPhoto library as a filesystem.
 """
 from __future__ import print_function
 
-import atexit
-import sys
-import traceback
-
-import shutil
-from platform import system
-
-from fuse import FUSE
-
-from iphotofuse import *
+from pyphotofs.iphotofuse import *
 
 __author__ = "Robert Harder"
 __email__ = "rob@iharder.net"
@@ -22,9 +13,8 @@ __copyright__ = "This code is released into the Public Domain"
 __version__ = "0.1"
 __status__ = "Development"
 
+
 def main():
-
-
     if len(sys.argv) < 2:
         print('usage: %s iphotolibrary [mountpoint]' % sys.argv[0])
         print("""

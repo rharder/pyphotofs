@@ -2,18 +2,8 @@
 
 from __future__ import print_function
 
-import atexit
-import traceback
+from pyphotofs.iphotofuse import *
 
-import sys
-from platform import system
-
-import shutil
-
-# from fuse import FUSE
-
-from iphoto import *
-from iphotofuse import *
 
 def main():
     lib_path = "/Users/rob/Pictures/iPhoto Library.photolibrary"
@@ -39,7 +29,6 @@ def main():
     # with open('./mount/iPhoto Library/Albums/Photos/lion square.png') as f:
     #     data = f.read()
     # print(len(data))
-
 
 
 if __name__ == "__main__":

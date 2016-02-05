@@ -20,7 +20,7 @@ import plistlib
 
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn, fuse_get_context
 
-
+from pyphotofs.iphoto import iPhotoLibrary
 
 
 def strip_end(text, suffix):
@@ -33,8 +33,10 @@ def strip_end(text, suffix):
 def remove_mount(mount):
     try:
         shutil.rmtree(mount)
-    except OSError, e:
-        print e
+    except:
+        pass
+    # except OSError, e:
+    #     print e
 
 
 if __name__ == '__main__':
@@ -107,8 +109,7 @@ if __name__ == '__main__':
     try:
         #fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, ro=True)
         fuse = FUSE(iPhoto_FUSE_FS(iPhotoLibrary(libraryPath)), mount, foreground=True, ro=True)
-    except Exception, e:
-        print e
+    except:#Exception, e:
+        # print e
         exit(1)
-        
         

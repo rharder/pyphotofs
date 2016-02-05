@@ -69,7 +69,7 @@ Required software:
 
 ## With <code>mount</code> Command
 
-If you copy <code>mount_iphoto.py</code> to <code>/sbin/mount_iphotofs</code> 
+If you copy/link (link may be better) <code>mount_iphoto.py</code> to <code>/sbin/mount_iphotofs</code> 
 (depending on your platform) you can use your native <code>mount</code> command
 with something like this:
 
@@ -77,14 +77,6 @@ with something like this:
 
 I have not tried it yet, but you could probably add it to your <code>/etc/fstab</code>
 file as well.
-
-
-## Oddities
-
-On the Mac even though a library gets mounted in <code>/Volumes</code> and is named
-according to the library name, the Finder icon for the new volume is named
-<code>OSFUSE Volume 0 (Python)</code>.  I do not know why nor am I going to fight
-that battle.
 
 
 ## To Do

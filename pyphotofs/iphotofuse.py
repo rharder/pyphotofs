@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Should work with Python 2 or 3
 import atexit
 import shutil
 import sys
@@ -11,7 +12,7 @@ from threading import Lock
 
 from fuse import FuseOSError, Operations, LoggingMixIn, fuse_get_context, FUSE
 
-from iphoto import *
+from pyphotofs.iphoto import *
 
 __author__ = "Robert Harder"
 __email__ = "rob@iharder.net"
@@ -116,8 +117,8 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                 nlink = 2 + self._library.num_collections(path[1:])  # And remove leading slash
                 now = time.mktime(datetime.datetime.now().timetuple())
                 st = self.add_uid_gid_pid(dict(
-                        st_mode=(S_IFDIR | iPhoto_FUSE_FS._CHMOD), st_nlink=nlink,
-                        st_ctime=now, st_atime=now, st_mtime=now))
+                    st_mode=(S_IFDIR | iPhoto_FUSE_FS._CHMOD), st_nlink=nlink,
+                    st_ctime=now, st_atime=now, st_mtime=now))
                 return cache.set(self._ck_st_by_path, path, st)
 
             elif path.startswith('/Albums/') or path.startswith('/Rolls/'):
@@ -136,8 +137,8 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                         nlink = 2 + collection.num_images
                         now = time.mktime(datetime.datetime.now().timetuple())
                         st = self.add_uid_gid_pid(dict(
-                                st_mode=(S_IFDIR | iPhoto_FUSE_FS._CHMOD), st_nlink=nlink,
-                                st_ctime=now, st_atime=now, st_mtime=now))
+                            st_mode=(S_IFDIR | iPhoto_FUSE_FS._CHMOD), st_nlink=nlink,
+                            st_ctime=now, st_atime=now, st_mtime=now))
                         return cache.set(self._ck_st_by_path, path, st)
 
                 # Asking about an image
@@ -158,8 +159,8 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
                     if image is not None:
                         st = os.lstat(image.abspath)
                         st = self.add_uid_gid_pid(
-                                dict((key, getattr(st, key)) for key in
-                                     ('st_atime', 'st_ctime', 'st_mode', 'st_mtime', 'st_nlink', 'st_size')))
+                            dict((key, getattr(st, key)) for key in
+                                 ('st_atime', 'st_ctime', 'st_mode', 'st_mtime', 'st_nlink', 'st_size')))
                         cache.set(self._ck_image_by_path, path, image)
                         return cache.set(self._ck_st_by_path, path, st)
 
@@ -292,14 +293,14 @@ def mount_iphotofs(library, mount=None, foreground=False):
     print("Library name", library.name)
     print("Mounting to", mount)
     fuse = FUSE(
-            iPhoto_FUSE_FS(library),
-            mount,
-            nothreads=False,
-            foreground=foreground,
-            ro=True,
-            allow_other=True,
-            fsname=library.name,
-            volname=library.name
+        iPhoto_FUSE_FS(library),
+        mount,
+        nothreads=False,
+        foreground=foreground,
+        ro=True,
+        allow_other=True,
+        fsname=library.name,
+        volname=library.name
     )
     return fuse
     # except Exception:
