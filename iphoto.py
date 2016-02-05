@@ -177,9 +177,9 @@ class iPhotoLibrary(object):
             return coll_list
         else:
             if c_type == 'Albums':
-                coll_list = [iPhotoAlbum(plist, self) for plist in self._plist['List of ' + c_type]]
+                coll_list = [iPhotoAlbum(plist, self) for plist in self._plist.get('List of ' + c_type, [])]
             elif c_type == 'Rolls':
-                coll_list = [iPhotoRoll(plist, self) for plist in self._plist['List of ' + c_type]]
+                coll_list = [iPhotoRoll(plist, self) for plist in self._plist.get('List of ' + c_type, [])]
             else:
                 coll_list = {}
             return self._cache.set(self._ck_collectionsByType, c_type, coll_list)
@@ -293,7 +293,7 @@ class iPhotoLibrary(object):
             return num
         else:
             if 'List of ' + c_type in self._plist:
-                num = len(self._plist['List of ' + c_type])
+                num = len(self._plist.get('List of ' + c_type, []))
             else:
                 num = 0
             return self._cache.set(self._ck_numCollectionsByType, c_type, num)
@@ -331,7 +331,7 @@ class iPhotoLibrary(object):
         if img is not None:
             return img
         else:
-            img_plist = self._plist['Master Image List'][img_id]
+            img_plist = self._plist.get('Master Image List', {}).get(img_id)
             if img_plist is None:
                 img = None
             else:
@@ -370,7 +370,7 @@ class iPhotoLibrary(object):
         :return: number of images
         :rtype: int
         """
-        return len(self._plist['Master Image List'])
+        return len(self._plist.get('Master Image List', []))
 
 
 class iPhotoCollection(object):
@@ -445,7 +445,7 @@ class iPhotoCollection(object):
         :return: number of images
         :rtype: int
         """
-        return len(self._plist['KeyList'])  # Not bothering to cache
+        return len(self._plist.get('KeyList', []))  # Not bothering to cache
 
 
 class iPhotoAlbum(iPhotoCollection):
@@ -478,7 +478,7 @@ class iPhotoImage:
         then the actual file on disk could be found at
         /Volumes/iPhoto Libraries/2014-2018 Colorado.photolibrary/Masters/2014/07/07/20140707-235350/IMG_5348.JPG
         """
-        absImgPath = self._plist['ImagePath']
+        absImgPath = self._plist.get('ImagePath')
         libName = os.path.basename(self._parentLibrary.abspath)
         return self._rel_internal_path_rel_path_recursive_helper(absImgPath, libName)
 
@@ -500,7 +500,7 @@ class iPhotoImage:
         not be what you are looking for.  The abspath()
         function is probably more appropriate.
         """
-        return self._plist['ImagePath']
+        return self._plist.get('ImagePath')
 
     @property
     def abspath(self):
