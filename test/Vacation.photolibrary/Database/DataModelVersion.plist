@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DatabaseCompatibleBackToMinorVersion</key>
+	<integer>220</integer>
+	<key>DatabaseMinorVersion</key>
+	<integer>226</integer>
+	<key>DatabaseVersion</key>
+	<integer>110</integer>
+	<key>adminProperties</key>
+	<dict>
+		<key>GeneralPreferences|FacesEnabled</key>
+		<true/>
+		<key>database.iPhoto|lastImportEventUuid</key>
+		<string>hzpZ5AmUQCCqEzMr3dck9w</string>
+		<key>database.iPhoto|lastNMonthsValue</key>
+		<integer>12</integer>
+		<key>database.iPhoto|showLastNMonths</key>
+		<true/>
+		<key>database|RKXMLExportManagerMode</key>
+		<string>RKXMLExportManagerExportAlwaysKey</string>
+		<key>database|UseEmbeddedJPEGv2</key>
+		<true/>
+		<key>database|applicationIdentifier</key>
+		<string>com.apple.iPhoto</string>
+		<key>database|automaticallyGenerateFullSizePreviews</key>
+		<true/>
+		<key>database|createDate</key>
+		<date>2016-02-06T04:36:43Z</date>
+		<key>database|databaseUuid</key>
+		<string>G4o7ZDc9Q5Kw6t5EWyTbiA</string>
+		<key>database|isIPhotoLibrary</key>
+		<true/>
+		<key>database|previewQuality</key>
+		<real>0.83333333333333304</real>
+		<key>database|previewSizeLimit</key>
+		<integer>1</integer>
+		<key>touchedBy|com.apple.iPhoto</key>
+		<integer>1</integer>
+	</dict>
+	<key>createDate</key>
+	<date>2016-02-06T04:36:43Z</date>
+	<key>databaseUuid</key>
+	<string>G4o7ZDc9Q5Kw6t5EWyTbiA</string>
+	<key>isIPhotoLibrary</key>
+	<true/>
+	<key>masterCount</key>
+	<integer>5</integer>
+	<key>projectCompatibleBackToVersion</key>
+	<integer>8</integer>
+	<key>projectVersion</key>
+	<integer>8</integer>
+	<key>touchedByIPhoto</key>
+	<true/>
+	<key>versionCount</key>
+	<integer>5</integer>
+</dict>
+</plist>

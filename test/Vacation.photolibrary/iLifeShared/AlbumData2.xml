@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+<key>Application Version</key>
+<string>9.4</string>
+<key>Archive Path</key>
+<string>/Users/rob/Pictures/Vacation.photolibrary</string>
+<key>ArchiveId</key>
+<string>1</string>
+<key>Movie Serial Number</key>
+<string>0</string>
+<key>List of Albums</key>
+<array>
+<dict>
+<key>AlbumId</key>
+<integer>4</integer>
+<key>AlbumName</key>
+<string>Photos</string>
+<key>GUID</key>
+<string>allPhotosAlbum</string>
+<key>Master</key><true/>
+<key>KeyListString</key>
+<string>9,5,1,3,7</string>
+<key>PhotoCount</key>
+<integer>5</integer>
+</dict>
+<dict>
+<key>AlbumId</key>
+<integer>10</integer>
+<key>AlbumName</key>
+<string>Flagged</string>
+<key>Album Type</key>
+<string>Flagged</string>
+<key>GUID</key>
+<string>flaggedAlbum</string>
+<key>KeyListString</key>
+<string></string>
+<key>PhotoCount</key>
+<integer>0</integer>
+</dict>
+<dict>
+<key>AlbumId</key>
+<integer>7</integer>
+<key>AlbumName</key>
+<string>Last 12 Months</string>
+<key>Album Type</key>
+<string>Special Month</string>
+<key>GUID</key>
+<string>lastNMonthsAlbum</string>
+<key>KeyListString</key>
+<string>9,5,1,3,7</string>
+<key>PhotoCount</key>
+<integer>5</integer>
+</dict>
+<dict>
+<key>AlbumId</key>
+<integer>8</integer>
+<key>AlbumName</key>
+<string>Last Import</string>
+<key>Album Type</key>
+<string>Regular</string>
+<key>GUID</key>
+<string>lastImportAlbum</string>
+<key>TransitionSpeed</key>
+<real>1</real>
+<key>ShuffleSlides</key><false/>
+<key>KeyListString</key>
+<string>9,5,1,3,7</string>
+<key>PhotoCount</key>
+<integer>5</integer>
+</dict>
+<dict>
+<key>AlbumId</key>
+<integer>15</integer>
+<key>AlbumName</key>
+<string>Boats</string>
+<key>Album Type</key>
+<string>Regular</string>
+<key>GUID</key>
+<string>KgiC4y7ZSoaut6rXv+LOiA</string>
+<key>SongPath</key>
+<string>/Applications/iPhoto.app/Contents/Resources/Music/Minuet in G.mp3</string>
+<key>TransitionSpeed</key>
+<real>1</real>
+<key>ShuffleSlides</key><false/>
+<key>KeyListString</key>
+<string>5,3</string>
+<key>PhotoCount</key>
+<integer>2</integer>
+</dict>
+<dict>
+<key>AlbumId</key>
+<integer>17</integer>
+<key>AlbumName</key>
+<string>Buildings</string>
+<key>Album Type</key>
+<string>Regular</string>
+<key>GUID</key>
+<string>sr63hrU9QFiH%n5mHfZULA</string>
+<key>SongPath</key>
+<string>/Applications/iPhoto.app/Contents/Resources/Music/Minuet in G.mp3</string>
+<key>TransitionSpeed</key>
+<real>1</real>
+<key>ShuffleSlides</key><false/>
+<key>KeyListString</key>
+<string>9,1</string>
+<key>PhotoCount</key>
+<integer>2</integer>
+</dict>
+</array>
+<key>List of Rolls</key>
+<array>
+<dict>
+<key>RollID</key>
+<integer>8</integer>
+<key>RollName</key>
+<string>Feb 5, 2016</string>
+<key>RollDateAsTimerInterval</key>
+<real>476426327.000000</real>
+<key>KeyPhotoKey</key>
+<string>3</string>
+<key>PhotoCount</key>
+<integer>5</integer>
+<key>KeyListString</key>
+<string>9,5,1,3,7</string>
+</dict>
+</array>
+</dict>
+</plist>

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+	<key>Application Version</key>
+	<string>9.4</string>
+	<key>Archive Path</key>
+	<string>/Users/rob/Pictures/Vacation.photolibrary</string>
+	<key>ArchiveId</key>
+	<string>1</string>
+	<key>Major Version</key>
+	<integer>2</integer>
+	<key>Minor Version</key>
+	<integer>0</integer>
+	<key>List of Albums</key>
+	<array>
+		<dict>
+			<key>AlbumId</key>
+			<integer>4</integer>
+			<key>AlbumName</key>
+			<string>Photos</string>
+			<key>Album Type</key>
+			<string>99</string>
+			<key>GUID</key>
+			<string>allPhotosAlbum</string>
+			<key>Master</key><true/>
+			<key>KeyList</key>
+			<array>
+				<string>9</string>
+				<string>5</string>
+				<string>1</string>
+				<string>3</string>
+				<string>7</string>
+			</array>
+			<key>PhotoCount</key>
+			<integer>5</integer>
+		</dict>
+		<dict>
+			<key>AlbumId</key>
+			<integer>10</integer>
+			<key>AlbumName</key>
+			<string>Flagged</string>
+			<key>Album Type</key>
+			<string>Flagged</string>
+			<key>GUID</key>
+			<string>flaggedAlbum</string>
+			<key>Sort Order</key>
+			<string>1</string>
+			<key>KeyList</key>
+			<array>
+			</array>
+			<key>PhotoCount</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>AlbumId</key>
+			<integer>7</integer>
+			<key>AlbumName</key>
+			<string>Last 12 Months</string>
+			<key>Album Type</key>
+			<string>Special Month</string>
+			<key>GUID</key>
+			<string>lastNMonthsAlbum</string>
+			<key>Sort Order</key>
+			<string>1</string>
+			<key>KeyList</key>
+			<array>
+				<string>9</string>
+				<string>5</string>
+				<string>1</string>
+				<string>3</string>
+				<string>7</string>
+			</array>
+			<key>PhotoCount</key>
+			<integer>5</integer>
+		</dict>
+		<dict>
+			<key>AlbumId</key>
+			<integer>8</integer>
+			<key>AlbumName</key>
+			<string>Last Import</string>
+			<key>Album Type</key>
+			<string>Regular</string>
+			<key>GUID</key>
+			<string>lastImportAlbum</string>
+			<key>TransitionSpeed</key>
+			<real>1.000000</real>
+			<key>ShuffleSlides</key><false/>
+			<key>Sort Order</key>
+			<string>1</string>
+			<key>KeyList</key>
+			<array>
+				<string>9</string>
+				<string>5</string>
+				<string>1</string>
+				<string>3</string>
+				<string>7</string>
+			</array>
+			<key>PhotoCount</key>
+			<integer>5</integer>
+		</dict>
+		<dict>
+			<key>AlbumId</key>
+			<integer>14</integer>
+			<key>GUID</key>
+			<string>hzpZ5AmUQCCqEzMr3dck9w</string>
+			<key>AlbumName</key>
+			<string>Feb 5, 2016</string>
+			<key>Album Type</key>
+			<string>Event</string>
+			<key>Sort Order</key>
+			<string>1</string>
+			<key>KeyPhotoKey</key>
+			<string>3</string>
+			<key>ProjectEarliestDateAsTimerInterval</key>
+			<real>476401127.00</real>
+			<key>KeyList</key>
+			<array>
+				<string>9</string>
+				<string>5</string>
+				<string>1</string>
+				<string>3</string>
+				<string>7</string>
+			</array>
+			<key>PhotoCount</key>
+			<integer>5</integer>
+		</dict>
+		<dict>
+			<key>AlbumId</key>
+			<integer>15</integer>
+			<key>AlbumName</key>
+			<string>Boats</string>
+			<key>Album Type</key>
+			<string>Regular</string>
+			<key>GUID</key>
+			<string>KgiC4y7ZSoaut6rXv+LOiA</string>
+			<key>SongPath</key>
+			<string>/Applications/iPhoto.app/Contents/Resources/Music/Minuet in G.mp3</string>
+			<key>TransitionSpeed</key>
+			<real>1.000000</real>
+			<key>ShuffleSlides</key><false/>
+			<key>Sort Order</key>
+			<string>1</string>
+			<key>KeyList</key>
+			<array>
+				<string>5</string>
+				<string>3</string>
+			</array>
+			<key>PhotoCount</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>AlbumId</key>
+			<integer>17</integer>
+			<key>AlbumName</key>
+			<string>Buildings</string>
+			<key>Album Type</key>
+			<string>Regular</string>
+			<key>GUID</key>
+			<string>sr63hrU9QFiH%n5mHfZULA</string>
+			<key>SongPath</key>
+			<string>/Applications/iPhoto.app/Contents/Resources/Music/Minuet in G.mp3</string>
+			<key>TransitionSpeed</key>
+			<real>1.000000</real>
+			<key>ShuffleSlides</key><false/>
+			<key>Sort Order</key>
+			<string>1</string>
+			<key>KeyList</key>
+			<array>
+				<string>9</string>
+				<string>1</string>
+			</array>
+			<key>PhotoCount</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>List of Rolls</key>
+	<array>
+		<dict>
+			<key>RollID</key>
+			<integer>8</integer>
+			<key>ProjectUuid</key>
+			<string>hzpZ5AmUQCCqEzMr3dck9w</string>
+			<key>RollName</key>
+			<string>Feb 5, 2016</string>
+			<key>RollDateAsTimerInterval</key>
+			<real>476426327.000000</real>
+			<key>KeyPhotoKey</key>
+			<string>3</string>
+			<key>PhotoCount</key>
+			<integer>5</integer>
+			<key>KeyList</key>
+			<array>
+			<string>9</string>
+			<string>5</string>
+			<string>1</string>
+			<string>3</string>
+			<string>7</string>
+			</array>
+		</dict>
+	</array>
+	<key>List of Faces</key>
+	<dict>
+	</dict>
+	<key>Master Image List</key>
+	<dict>
+		<key>9</key>
+		<dict>
+			<key>Caption</key>
+			<string>hotel</string>
+			<key>Comment</key>
+			<string> </string>
+			<key>GUID</key>
+			<string>12wwssZ0QRyaZ8okuPWfFQ</string>
+			<key>Roll</key>
+			<integer>8</integer>
+			<key>Rating</key>
+			<integer>0</integer>
+			<key>ImagePath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Masters/2016/02/05/20160205-213957/hotel.jpg</string>
+			<key>MediaType</key>
+			<string>Image</string>
+			<key>ModDateAsTimerInterval</key>
+			<real>476426327.000000</real>
+			<key>DateAsTimerInterval</key>
+			<real>476426327.000000</real>
+			<key>DateAsTimerIntervalGMT</key>
+			<real>476401127.000000</real>
+			<key>MetaModDateAsTimerInterval</key>
+			<real>476426410.087719</real>
+			<key>ThumbPath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Thumbnails/2016/02/05/20160205-213957/12wwssZ0QRyaZ8okuPWfFQ/hotel.jpg</string>
+		</dict>
+		<key>5</key>
+		<dict>
+			<key>Caption</key>
+			<string>sailboat</string>
+			<key>Comment</key>
+			<string> </string>
+			<key>GUID</key>
+			<string>uRaLkbVlQWmett6kLA8dnQ</string>
+			<key>Roll</key>
+			<integer>8</integer>
+			<key>Rating</key>
+			<integer>0</integer>
+			<key>ImagePath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Masters/2016/02/05/20160205-213957/sailboat.jpg</string>
+			<key>MediaType</key>
+			<string>Image</string>
+			<key>ModDateAsTimerInterval</key>
+			<real>476426338.000000</real>
+			<key>DateAsTimerInterval</key>
+			<real>476426338.000000</real>
+			<key>DateAsTimerIntervalGMT</key>
+			<real>476401138.000000</real>
+			<key>MetaModDateAsTimerInterval</key>
+			<real>476426410.088128</real>
+			<key>ThumbPath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Thumbnails/2016/02/05/20160205-213957/uRaLkbVlQWmett6kLA8dnQ/sailboat.jpg</string>
+		</dict>
+		<key>1</key>
+		<dict>
+			<key>Caption</key>
+			<string>pool</string>
+			<key>Comment</key>
+			<string> </string>
+			<key>GUID</key>
+			<string>7Unn7GIpRX6CYBkv6sPAPw</string>
+			<key>Roll</key>
+			<integer>8</integer>
+			<key>Rating</key>
+			<integer>0</integer>
+			<key>ImagePath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Masters/2016/02/05/20160205-213957/pool.jpg</string>
+			<key>MediaType</key>
+			<string>Image</string>
+			<key>ModDateAsTimerInterval</key>
+			<real>476426343.000000</real>
+			<key>DateAsTimerInterval</key>
+			<real>476426343.000000</real>
+			<key>DateAsTimerIntervalGMT</key>
+			<real>476401143.000000</real>
+			<key>MetaModDateAsTimerInterval</key>
+			<real>476426407.043581</real>
+			<key>ThumbPath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Thumbnails/2016/02/05/20160205-213957/7Unn7GIpRX6CYBkv6sPAPw/pool.jpg</string>
+		</dict>
+		<key>3</key>
+		<dict>
+			<key>Caption</key>
+			<string>sail-down</string>
+			<key>Comment</key>
+			<string> </string>
+			<key>GUID</key>
+			<string>vGMMHmV%SCa4SZEbicI6dA</string>
+			<key>Roll</key>
+			<integer>8</integer>
+			<key>Rating</key>
+			<integer>0</integer>
+			<key>ImagePath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Masters/2016/02/05/20160205-213957/sail-down.jpg</string>
+			<key>MediaType</key>
+			<string>Image</string>
+			<key>ModDateAsTimerInterval</key>
+			<real>476426351.000000</real>
+			<key>DateAsTimerInterval</key>
+			<real>476426351.000000</real>
+			<key>DateAsTimerIntervalGMT</key>
+			<real>476401151.000000</real>
+			<key>MetaModDateAsTimerInterval</key>
+			<real>476426407.042936</real>
+			<key>ThumbPath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Thumbnails/2016/02/05/20160205-213957/vGMMHmV%SCa4SZEbicI6dA/sail-down.jpg</string>
+		</dict>
+		<key>7</key>
+		<dict>
+			<key>Caption</key>
+			<string>this-way</string>
+			<key>Comment</key>
+			<string> </string>
+			<key>GUID</key>
+			<string>GUzFRFI2SxahPKDY+a0H%g</string>
+			<key>Roll</key>
+			<integer>8</integer>
+			<key>Rating</key>
+			<integer>1</integer>
+			<key>ImagePath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Masters/2016/02/05/20160205-213957/this-way.jpg</string>
+			<key>MediaType</key>
+			<string>Image</string>
+			<key>ModDateAsTimerInterval</key>
+			<real>476426357.000000</real>
+			<key>DateAsTimerInterval</key>
+			<real>476426357.000000</real>
+			<key>DateAsTimerIntervalGMT</key>
+			<real>476401157.000000</real>
+			<key>MetaModDateAsTimerInterval</key>
+			<real>476426467.114879</real>
+			<key>ThumbPath</key>
+			<string>/Users/rob/Pictures/Vacation.photolibrary/Thumbnails/2016/02/05/20160205-213957/GUzFRFI2SxahPKDY+a0H%g/this-way.jpg</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
