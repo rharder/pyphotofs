@@ -24,8 +24,10 @@ def main():
                 print('\t\t', img)
                 pass
 
-    argv = [sys.argv[0], lib_path, '-./mount']
-    mount_iphotofs(argv, foreground=True)
+    sys.argv += [ lib_path, '-./mount']
+
+    lib = iPhotoLibrary(sys.argv[1])
+    mount_iphotofs(lib, sys.argv[2], foreground=True)
     # with open('./mount/iPhoto Library/Albums/Photos/lion square.png') as f:
     #     data = f.read()
     # print(len(data))
