@@ -225,7 +225,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         return os.close(fh)
 
 
-def mount_iphotofs(library, mount=None, foreground=False):
+def mount_iphotofs(library, mount=None, foreground=True):
     """
 
     :param iphoto.iPhotoLibrary library:

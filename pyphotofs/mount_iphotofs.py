@@ -33,7 +33,7 @@ def main():
         mount = sys.argv[2]
     else:
         mount = None
-    mount_iphotofs(lib, mount)
+    mount_iphotofs(lib, mount, foreground=True)
 
 
 if __name__ == '__main__':

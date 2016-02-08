@@ -2,4 +2,4 @@
 desktop.ini
 *.lnk
 __pycache__
-
+*.pyc

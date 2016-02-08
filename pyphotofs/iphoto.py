@@ -122,7 +122,7 @@ class iPhotoLibrary(object):
     def __init__(self, library_path, verbose=False):
 
         # self._albumDataStMTime = None
-        self._libraryPath = library_path
+        self._libraryPath = os.path.normpath(library_path)
         self._album_data_xml = os.path.join(self._libraryPath, 'AlbumData.xml')
         self._plist = plistlib.readPlist(self._album_data_xml)
         self._cache = Cache(mtime_file=self._album_data_xml, verbose=verbose)
