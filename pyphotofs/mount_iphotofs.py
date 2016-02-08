@@ -5,7 +5,7 @@ Mounts an iPhoto library as a filesystem.
 """
 from __future__ import print_function
 
-from pyphotofs.iphotofuse import *
+from .iphotofuse import *
 
 __author__ = "Robert Harder"
 __email__ = "rob@iharder.net"

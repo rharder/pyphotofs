@@ -12,7 +12,7 @@ from threading import Lock
 
 from fuse import FuseOSError, Operations, LoggingMixIn, fuse_get_context, FUSE
 
-from pyphotofs.iphoto import *
+from .iphoto import *
 
 __author__ = "Robert Harder"
 __email__ = "rob@iharder.net"
