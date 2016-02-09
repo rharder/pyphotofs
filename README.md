@@ -59,6 +59,7 @@ Required software:
     - Mac: http://osxfuse.github.io
     - GNU/Linux: http://fuse.sourceforge.net
     - FreeBSD: Built-in
+	  -- BSD may need to pkg install fusefs-kmod or py27-fusefs
 - fusepy 
     - https://github.com/terencehonles/fusepy
     - sudo pip install fusepy
