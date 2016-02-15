@@ -129,10 +129,7 @@ class iPhotoLibrary(object):
         self.verbose = verbose
 
     def __str__(self):
-        return "[iPhoto Library '{}', images={}, albums={} ({})]".format(
-            self.name, self.num_images, self.num_albums,
-            ', '.join(self.album_names)
-        )
+        return "[iPhoto Library '{}']".format(self.name)
 
     @property
     def cache(self):
