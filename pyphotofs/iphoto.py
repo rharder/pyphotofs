@@ -137,9 +137,9 @@ class iPhotoLibrary(object):
 
     @property
     def name(self):
-        print(self._libraryPath)
-        print(os.path.basename(self._libraryPath))
-        print(os.path.splitext(os.path.basename(self._libraryPath)))
+        # print(self._libraryPath)
+        # print(os.path.basename(self._libraryPath))
+        # print(os.path.splitext(os.path.basename(self._libraryPath)))
         base, _ = os.path.splitext(os.path.basename(self._libraryPath))
         return base
 

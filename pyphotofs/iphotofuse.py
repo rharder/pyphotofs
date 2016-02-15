@@ -225,7 +225,7 @@ class iPhoto_FUSE_FS(LoggingMixIn, Operations):
         return os.close(fh)
 
 
-def mount_iphotofs(library, mount=None, foreground=True):
+def mount_iphotofs(library, mount=None, foreground=True, verbose=False):
     """
 
     :param iphoto.iPhotoLibrary library:
@@ -289,9 +289,9 @@ def mount_iphotofs(library, mount=None, foreground=True):
         atexit.register(remove_mount, os.path.abspath(mount))
 
     # try:
-    print("Library", str(library))
-    print("Library name", library.name)
-    print("Mounting to", mount)
+    if verbose:
+        print("Library", str(library))
+        print("Mounting to", mount)
     fuse = FUSE(
         iPhoto_FUSE_FS(library),
         mount,
