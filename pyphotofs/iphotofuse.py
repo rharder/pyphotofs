@@ -299,7 +299,6 @@ def mount_iphotofs(library, mount=None, foreground=True, verbose=False):
         foreground=foreground,
         ro=True,
         allow_other=True,
-        allow_root=True,
         fsname=library.name,
         volname=library.name
     )
